@@ -1,0 +1,48 @@
+#!/bin/bash
+NARGS=$#
+BUF=true
+EF=$1
+ES=$2
+INTEGER='^[0-9]+$'
+
+stop_basic_test()
+{
+	if [ "$UID" -ne 0 ]; then
+	echo "This script should be run as 'root'"; return 1
+	fi
+	
+	if [[ $NARGS -ne 2 ]]; then
+	echo "usage: $0 <FAST_CLIENTS> <SLOW_CLIENTS>"
+	return 1
+	fi
+
+	if ! [[ $EF =~ $INTEGER ]]; then
+   	echo "error: Range of fast clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $ES =~ $INTEGER ]]; then
+   	echo "error: Range of slow clients must be a number" >&2; return 1
+	fi
+
+	# Stop containers
+	if [ "$BUF" == true ] ; then
+		lxc-stop -n buffer
+	fi
+
+	for (( i = 0; i < $EF; i++ ))
+	do
+		lxc-stop -n fast-client-${i}
+	done
+
+	for (( i = 0; i < $ES; i++ ))
+	do
+		lxc-stop -n slow-client-${i}
+	done
+
+	# Stop ns-3 which has locked the taps
+	pkill -f "CameraStreaming"
+
+}
+
+stop_basic_test
+

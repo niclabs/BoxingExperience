@@ -1,0 +1,108 @@
+#!/bin/bash
+NARGS=$#
+BUF=true
+BF=$1
+EF=$2
+BS=$3
+ES=$4
+LXC_PATH=/var/lib/lxc
+VLC_PATH=/home/jcarrera/Documents/vlc
+INTEGER='^[0-9]+$'
+
+create_containers()
+{
+	if [ "$UID" -ne 0 ]; then
+	echo "This script should be run as 'root'"; return 1
+	fi
+
+	if [[ $NARGS -ne 4 ]]; then
+	echo "usage: $0 <FAST_CLIENTS_START> <FAST_CLIENTS_END> <SLOW_CLIENTS_START> <SLOW_CLIENTS_END>"
+	return 1
+	fi
+
+	if ! [[ $BF =~ $INTEGER ]]; then
+   	echo "error: Range of fast clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $BS =~ $INTEGER ]]; then
+   	echo "error: Range of slow clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $EF =~ $INTEGER ]]; then
+   	echo "error: Range of fast clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $ES =~ $INTEGER ]]; then
+   	echo "error: Range of slow clients must be a number" >&2; return 1
+	fi
+
+	# Create configuration files
+	mkdir lxc_conf
+	cc makeconf.c -o makeconf
+	./makeconf $EF $ES
+
+	# Create and start bridges/taps
+	if [ "$BUF" == true ] ; then
+		brctl addbr br-buffer
+		tunctl -t tap-buffer
+		ifconfig tap-buffer 0.0.0.0 promisc up
+		brctl addif br-buffer tap-buffer
+		ifconfig br-buffer up
+	fi
+
+	for (( i=$BF; i < $EF; i++ ))
+	do
+		brctl addbr br-${i}-fast-c
+		tunctl -t tap-fc${i}
+		ifconfig tap-fc${i} 0.0.0.0 promisc up
+		brctl addif br-${i}-fast-c tap-fc${i}
+		ifconfig br-${i}-fast-c up
+	done
+
+
+	for (( i=$BS; i < $ES; i++ ))
+	do
+		brctl addbr br-${i}-slow-c
+		tunctl -t tap-sc${i}
+		ifconfig tap-sc${i} 0.0.0.0 promisc up
+		brctl addif br-${i}-slow-c tap-sc${i}
+		ifconfig br-${i}-slow-c up
+	done
+	
+	# Show existing bridges
+	brctl show &&
+
+	# Create containers
+	if [ "$BUF" == true ] ; then
+		lxc-create -n buffer -f ./lxc_conf/lxc-buffer.conf -t ubuntu
+	fi
+
+	for (( i=$BF; i < $EF; i++ ))
+	do
+		lxc-create -n fast-client-${i} -f ./lxc_conf/lxc-fast-client-${i}.conf -t ubuntu
+	done
+
+	for (( i=$BS; i < $ES; i++ ))
+	do
+		lxc-create -n slow-client-${i} -f ./lxc_conf/lxc-slow-client-${i}.conf -t ubuntu
+	done
+
+	# Create mount point directories
+	if [ "$BUF" == true ] ; then
+		mkdir -p $LXC_PATH/buffer/rootfs/$VLC_PATH
+	fi
+
+	for (( i=$BF; i < $EF; i++ ))
+	do
+		mkdir -p $LXC_PATH/fast-client-${i}/rootfs/$VLC_PATH
+	done
+
+	for (( i=$BS; i < $ES; i++ ))
+	do
+		mkdir -p $LXC_PATH/slow-client-${i}/rootfs/$VLC_PATH
+	done
+
+}
+
+create_containers
+

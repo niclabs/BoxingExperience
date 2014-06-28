@@ -1,0 +1,127 @@
+#!/bin/bash
+NARGS=$#
+BUF=true
+BF=$1
+EF=$2
+BS=$3
+ES=$4
+INTEGER='^[0-9]+$'
+
+destroy_containers()
+{
+	if [ "$UID" -ne 0 ]; then
+	echo "This script should be run as 'root'"; return 1
+	fi
+	
+	if [[ $NARGS -ne 4 ]]; then
+	echo "usage: $0 <FAST_CLIENTS_START> <FAST_CLIENTS_END> <SLOW_CLIENTS_START> <SLOW_CLIENTS_END>"
+	return 1
+	fi
+
+	if ! [[ $BF =~ $INTEGER ]]; then
+   	echo "error: Range of fast clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $BS =~ $INTEGER ]]; then
+   	echo "error: Range of slow clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $EF =~ $INTEGER ]]; then
+   	echo "error: Range of fast clients must be a number" >&2; return 1
+	fi
+
+	if ! [[ $ES =~ $INTEGER ]]; then
+   	echo "error: Range of slow clients must be a number" >&2; return 1
+	fi
+
+	# Stop containers and ns-3 (taps can't be destroyed while ns-3 is using them)
+	./stop_basic_test $EF $ES
+
+	# Destroy containers
+	if [ "$BUF" == true ] ; then
+		lxc-destroy -n buffer
+	fi
+
+	for (( i = $BF; i < $EF; i++ ))
+	do
+		lxc-destroy -n fast-client-${i}
+	done
+
+	for (( i = $BS; i < $ES; i++ ))
+	do
+		lxc-destroy -n slow-client-${i}
+	done
+
+	# Take bridges down
+	for (( i = $BF; i < $EF; i++ ))
+	do
+		ifconfig br-${i}-fast-c down
+	done
+	for (( i = $BS; i < $ES; i++ ))
+	do
+		ifconfig br-${i}-slow-c down
+	done
+
+	if [ "$BUF" == true ] ; then
+		ifconfig br-buffer down
+	fi
+
+	# Remove taps from the bridges
+	for (( i = $BF; i < $EF; i++ ))
+	do
+		brctl delif br-${i}-fast-c tap-fc${i}
+	done
+	for (( i = $BS; i < $ES; i++ ))
+	do
+		brctl delif br-${i}-slow-c tap-sc${i}
+	done
+
+	if [ "$BUF" == true ] ; then
+		brctl delif br-buffer tap-buffer
+	fi
+
+	# Bring down the taps
+	for (( i = $BF; i < $EF; i++ ))
+	do
+		ifconfig tap-fc${i} down
+	done
+	for (( i = $BS; i < $ES; i++ ))
+	do
+		ifconfig tap-sc${i} down
+	done
+
+	if [ "$BUF" == true ] ; then
+		ifconfig tap-buffer down
+	fi
+
+	# Delete the taps
+	for (( i = $BF; i < $EF; i++ ))
+	do
+		tunctl -d tap-fc${i}
+	done
+	for (( i = $BS; i < $ES; i++ ))
+	do
+		tunctl -d tap-sc${i}
+	done
+
+	if [ "$BUF" == true ] ; then
+		tunctl -d tap-buffer
+	fi
+
+	# Destroy the bridges
+	for (( i = $BF; i < $EF; i++ ))
+	do
+		brctl delbr br-${i}-fast-c
+	done
+	for (( i = $BS; i < $ES; i++ ))
+	do
+		brctl delbr br-${i}-slow-c
+	done
+
+	if [ "$BUF" == true ] ; then
+		brctl delbr br-buffer
+	fi
+}
+
+destroy_containers
+
