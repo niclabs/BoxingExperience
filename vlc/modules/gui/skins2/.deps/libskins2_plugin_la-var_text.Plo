@@ -1,0 +1,518 @@
+libskins2_plugin_la-var_text.lo: utils/var_text.cpp utils/var_text.hpp \
+ utils/variable.hpp utils/../src/skin_common.hpp ../../../config.h \
+ ../../../include/vlc_fixups.h \
+ /usr/lib/gcc/i686-linux-gnu/4.6/include/stddef.h \
+ ../../../include/vlc_common.h ../../../include/vlc_config.h \
+ /usr/include/stdlib.h /usr/include/features.h \
+ /usr/include/i386-linux-gnu/bits/predefs.h \
+ /usr/include/i386-linux-gnu/sys/cdefs.h \
+ /usr/include/i386-linux-gnu/bits/wordsize.h \
+ /usr/include/i386-linux-gnu/gnu/stubs.h \
+ /usr/include/i386-linux-gnu/gnu/stubs-32.h \
+ /usr/include/i386-linux-gnu/bits/waitflags.h \
+ /usr/include/i386-linux-gnu/bits/waitstatus.h /usr/include/endian.h \
+ /usr/include/i386-linux-gnu/bits/endian.h \
+ /usr/include/i386-linux-gnu/bits/byteswap.h /usr/include/xlocale.h \
+ /usr/include/i386-linux-gnu/sys/types.h \
+ /usr/include/i386-linux-gnu/bits/types.h \
+ /usr/include/i386-linux-gnu/bits/typesizes.h /usr/include/time.h \
+ /usr/include/i386-linux-gnu/sys/select.h \
+ /usr/include/i386-linux-gnu/bits/select.h \
+ /usr/include/i386-linux-gnu/bits/sigset.h \
+ /usr/include/i386-linux-gnu/bits/time.h \
+ /usr/include/i386-linux-gnu/bits/select2.h \
+ /usr/include/i386-linux-gnu/sys/sysmacros.h \
+ /usr/include/i386-linux-gnu/bits/pthreadtypes.h /usr/include/alloca.h \
+ /usr/include/i386-linux-gnu/bits/stdlib.h \
+ /usr/lib/gcc/i686-linux-gnu/4.6/include/stdarg.h /usr/include/string.h \
+ /usr/include/i386-linux-gnu/bits/string3.h /usr/include/stdio.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/include/i386-linux-gnu/bits/stdio_lim.h \
+ /usr/include/i386-linux-gnu/bits/sys_errlist.h \
+ /usr/include/i386-linux-gnu/bits/stdio.h \
+ /usr/include/i386-linux-gnu/bits/stdio2.h /usr/include/inttypes.h \
+ /usr/lib/gcc/i686-linux-gnu/4.6/include/stdint.h /usr/include/stdint.h \
+ /usr/include/i386-linux-gnu/bits/wchar.h ../../../include/vlc_mtime.h \
+ ../../../include/vlc_threads.h /usr/include/unistd.h \
+ /usr/include/i386-linux-gnu/bits/posix_opt.h \
+ /usr/include/i386-linux-gnu/bits/environments.h \
+ /usr/include/i386-linux-gnu/bits/confname.h /usr/include/getopt.h \
+ /usr/include/i386-linux-gnu/bits/unistd.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/i386-linux-gnu/bits/sched.h \
+ /usr/include/i386-linux-gnu/bits/timex.h \
+ /usr/include/i386-linux-gnu/bits/setjmp.h /usr/include/semaphore.h \
+ /usr/include/i386-linux-gnu/bits/semaphore.h \
+ ../../../include/vlc_arrays.h ../../../include/vlc_messages.h \
+ ../../../include/vlc_objects.h ../../../include/vlc_variables.h \
+ ../../../include/vlc_main.h ../../../include/vlc_configuration.h \
+ ../../../include/vlc_interface.h ../../../include/vlc_charset.h \
+ ../../../include/vlc_fs.h /usr/include/dirent.h \
+ /usr/include/i386-linux-gnu/bits/dirent.h \
+ /usr/include/i386-linux-gnu/bits/posix1_lim.h \
+ /usr/include/i386-linux-gnu/bits/local_lim.h /usr/include/linux/limits.h \
+ /usr/include/c++/4.6/string \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/c++config.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/os_defines.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/cpu_defines.h \
+ /usr/include/c++/4.6/bits/stringfwd.h \
+ /usr/include/c++/4.6/bits/char_traits.h \
+ /usr/include/c++/4.6/bits/stl_algobase.h \
+ /usr/include/c++/4.6/bits/functexcept.h \
+ /usr/include/c++/4.6/bits/exception_defines.h \
+ /usr/include/c++/4.6/bits/cpp_type_traits.h \
+ /usr/include/c++/4.6/ext/type_traits.h \
+ /usr/include/c++/4.6/ext/numeric_traits.h \
+ /usr/include/c++/4.6/bits/stl_pair.h /usr/include/c++/4.6/bits/move.h \
+ /usr/include/c++/4.6/bits/concept_check.h \
+ /usr/include/c++/4.6/bits/stl_iterator_base_types.h \
+ /usr/include/c++/4.6/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/4.6/bits/stl_iterator.h \
+ /usr/include/c++/4.6/debug/debug.h /usr/include/c++/4.6/bits/postypes.h \
+ /usr/include/c++/4.6/cwchar /usr/include/i386-linux-gnu/bits/wchar2.h \
+ /usr/include/c++/4.6/bits/allocator.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/c++allocator.h \
+ /usr/include/c++/4.6/ext/new_allocator.h /usr/include/c++/4.6/new \
+ /usr/include/c++/4.6/exception /usr/include/c++/4.6/bits/localefwd.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/c++locale.h \
+ /usr/include/c++/4.6/clocale /usr/include/locale.h \
+ /usr/include/i386-linux-gnu/bits/locale.h /usr/include/c++/4.6/iosfwd \
+ /usr/include/c++/4.6/cctype /usr/include/ctype.h \
+ /usr/include/c++/4.6/bits/ostream_insert.h \
+ /usr/include/c++/4.6/bits/cxxabi_forced.h \
+ /usr/include/c++/4.6/bits/stl_function.h \
+ /usr/include/c++/4.6/backward/binders.h \
+ /usr/include/c++/4.6/bits/range_access.h \
+ /usr/include/c++/4.6/bits/basic_string.h \
+ /usr/include/c++/4.6/ext/atomicity.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/gthr.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/gthr-default.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/atomic_word.h \
+ /usr/include/c++/4.6/initializer_list \
+ /usr/include/c++/4.6/bits/basic_string.tcc utils/pointer.hpp \
+ utils/var_percent.hpp utils/observer.hpp /usr/include/c++/4.6/set \
+ /usr/include/c++/4.6/bits/stl_tree.h /usr/include/c++/4.6/bits/stl_set.h \
+ /usr/include/c++/4.6/bits/stl_multiset.h utils/ustring.hpp \
+ utils/../src/vlcproc.hpp ../../../include/vlc_input.h \
+ ../../../include/vlc_es.h ../../../include/vlc_fourcc.h \
+ ../../../include/vlc_meta.h ../../../include/vlc_epg.h \
+ ../../../include/vlc_events.h ../../../include/vlc_input_item.h \
+ ../../../include/vlc_vout.h ../../../include/vlc_picture.h \
+ ../../../include/vlc_atomic.h ../../../include/vlc_filter.h \
+ ../../../include/vlc_subpicture.h ../../../include/vlc_text_style.h \
+ ../../../include/vlc_mouse.h utils/../src/../vars/equalizer.hpp \
+ utils/../src/../vars/../utils/var_percent.hpp \
+ utils/../src/../vars/playtree.hpp ../../../include/vlc_playlist.h \
+ utils/../src/../vars/../utils/var_tree.hpp /usr/include/c++/4.6/list \
+ /usr/include/c++/4.6/bits/stl_list.h /usr/include/c++/4.6/bits/list.tcc \
+ /usr/include/assert.h utils/../src/../vars/../utils/variable.hpp \
+ utils/../src/../vars/../utils/observer.hpp \
+ utils/../src/../vars/../utils/ustring.hpp \
+ utils/../src/../vars/../utils/var_percent.hpp /usr/include/c++/4.6/map \
+ /usr/include/c++/4.6/bits/stl_map.h \
+ /usr/include/c++/4.6/bits/stl_multimap.h utils/../src/../vars/time.hpp \
+ utils/../src/../vars/volume.hpp utils/../src/../utils/position.hpp \
+ utils/../src/../utils/variable.hpp utils/../src/../utils/observer.hpp \
+ utils/../src/../utils/pointer.hpp utils/../src/../utils/var_text.hpp \
+ utils/../src/../utils/var_string.hpp \
+ utils/../src/../controls/ctrl_video.hpp \
+ utils/../src/../controls/ctrl_generic.hpp \
+ utils/../src/../controls/../src/skin_common.hpp \
+ utils/../src/../controls/../utils/pointer.hpp \
+ utils/../src/../controls/../utils/ustring.hpp \
+ utils/../src/../controls/../utils/observer.hpp \
+ utils/../src/../controls/../commands/cmd_generic.hpp \
+ utils/../src/../controls/../commands/../src/skin_common.hpp \
+ utils/../src/../controls/../commands/../utils/pointer.hpp \
+ utils/../src/../controls/../utils/position.hpp \
+ utils/../src/../controls/../src/vout_window.hpp \
+ utils/../src/../controls/../src/generic_window.hpp \
+ utils/../src/../controls/../src/skin_common.hpp \
+ utils/../src/../controls/../src/../utils/var_bool.hpp \
+ utils/../src/../controls/../src/../utils/variable.hpp \
+ utils/../src/../controls/../src/../utils/observer.hpp \
+ ../../../include/vlc_vout_window.h utils/../src/var_manager.hpp \
+ utils/../vars/time.hpp utils/../vars/volume.hpp
+
+utils/var_text.hpp:
+
+utils/variable.hpp:
+
+utils/../src/skin_common.hpp:
+
+../../../config.h:
+
+../../../include/vlc_fixups.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stddef.h:
+
+../../../include/vlc_common.h:
+
+../../../include/vlc_config.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/features.h:
+
+/usr/include/i386-linux-gnu/bits/predefs.h:
+
+/usr/include/i386-linux-gnu/sys/cdefs.h:
+
+/usr/include/i386-linux-gnu/bits/wordsize.h:
+
+/usr/include/i386-linux-gnu/gnu/stubs.h:
+
+/usr/include/i386-linux-gnu/gnu/stubs-32.h:
+
+/usr/include/i386-linux-gnu/bits/waitflags.h:
+
+/usr/include/i386-linux-gnu/bits/waitstatus.h:
+
+/usr/include/endian.h:
+
+/usr/include/i386-linux-gnu/bits/endian.h:
+
+/usr/include/i386-linux-gnu/bits/byteswap.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/i386-linux-gnu/sys/types.h:
+
+/usr/include/i386-linux-gnu/bits/types.h:
+
+/usr/include/i386-linux-gnu/bits/typesizes.h:
+
+/usr/include/time.h:
+
+/usr/include/i386-linux-gnu/sys/select.h:
+
+/usr/include/i386-linux-gnu/bits/select.h:
+
+/usr/include/i386-linux-gnu/bits/sigset.h:
+
+/usr/include/i386-linux-gnu/bits/time.h:
+
+/usr/include/i386-linux-gnu/bits/select2.h:
+
+/usr/include/i386-linux-gnu/sys/sysmacros.h:
+
+/usr/include/i386-linux-gnu/bits/pthreadtypes.h:
+
+/usr/include/alloca.h:
+
+/usr/include/i386-linux-gnu/bits/stdlib.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stdarg.h:
+
+/usr/include/string.h:
+
+/usr/include/i386-linux-gnu/bits/string3.h:
+
+/usr/include/stdio.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/include/i386-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/i386-linux-gnu/bits/sys_errlist.h:
+
+/usr/include/i386-linux-gnu/bits/stdio.h:
+
+/usr/include/i386-linux-gnu/bits/stdio2.h:
+
+/usr/include/inttypes.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/i386-linux-gnu/bits/wchar.h:
+
+../../../include/vlc_mtime.h:
+
+../../../include/vlc_threads.h:
+
+/usr/include/unistd.h:
+
+/usr/include/i386-linux-gnu/bits/posix_opt.h:
+
+/usr/include/i386-linux-gnu/bits/environments.h:
+
+/usr/include/i386-linux-gnu/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/include/i386-linux-gnu/bits/unistd.h:
+
+/usr/include/pthread.h:
+
+/usr/include/sched.h:
+
+/usr/include/i386-linux-gnu/bits/sched.h:
+
+/usr/include/i386-linux-gnu/bits/timex.h:
+
+/usr/include/i386-linux-gnu/bits/setjmp.h:
+
+/usr/include/semaphore.h:
+
+/usr/include/i386-linux-gnu/bits/semaphore.h:
+
+../../../include/vlc_arrays.h:
+
+../../../include/vlc_messages.h:
+
+../../../include/vlc_objects.h:
+
+../../../include/vlc_variables.h:
+
+../../../include/vlc_main.h:
+
+../../../include/vlc_configuration.h:
+
+../../../include/vlc_interface.h:
+
+../../../include/vlc_charset.h:
+
+../../../include/vlc_fs.h:
+
+/usr/include/dirent.h:
+
+/usr/include/i386-linux-gnu/bits/dirent.h:
+
+/usr/include/i386-linux-gnu/bits/posix1_lim.h:
+
+/usr/include/i386-linux-gnu/bits/local_lim.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/c++/4.6/string:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/c++config.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/os_defines.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/cpu_defines.h:
+
+/usr/include/c++/4.6/bits/stringfwd.h:
+
+/usr/include/c++/4.6/bits/char_traits.h:
+
+/usr/include/c++/4.6/bits/stl_algobase.h:
+
+/usr/include/c++/4.6/bits/functexcept.h:
+
+/usr/include/c++/4.6/bits/exception_defines.h:
+
+/usr/include/c++/4.6/bits/cpp_type_traits.h:
+
+/usr/include/c++/4.6/ext/type_traits.h:
+
+/usr/include/c++/4.6/ext/numeric_traits.h:
+
+/usr/include/c++/4.6/bits/stl_pair.h:
+
+/usr/include/c++/4.6/bits/move.h:
+
+/usr/include/c++/4.6/bits/concept_check.h:
+
+/usr/include/c++/4.6/bits/stl_iterator_base_types.h:
+
+/usr/include/c++/4.6/bits/stl_iterator_base_funcs.h:
+
+/usr/include/c++/4.6/bits/stl_iterator.h:
+
+/usr/include/c++/4.6/debug/debug.h:
+
+/usr/include/c++/4.6/bits/postypes.h:
+
+/usr/include/c++/4.6/cwchar:
+
+/usr/include/i386-linux-gnu/bits/wchar2.h:
+
+/usr/include/c++/4.6/bits/allocator.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/c++allocator.h:
+
+/usr/include/c++/4.6/ext/new_allocator.h:
+
+/usr/include/c++/4.6/new:
+
+/usr/include/c++/4.6/exception:
+
+/usr/include/c++/4.6/bits/localefwd.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/c++locale.h:
+
+/usr/include/c++/4.6/clocale:
+
+/usr/include/locale.h:
+
+/usr/include/i386-linux-gnu/bits/locale.h:
+
+/usr/include/c++/4.6/iosfwd:
+
+/usr/include/c++/4.6/cctype:
+
+/usr/include/ctype.h:
+
+/usr/include/c++/4.6/bits/ostream_insert.h:
+
+/usr/include/c++/4.6/bits/cxxabi_forced.h:
+
+/usr/include/c++/4.6/bits/stl_function.h:
+
+/usr/include/c++/4.6/backward/binders.h:
+
+/usr/include/c++/4.6/bits/range_access.h:
+
+/usr/include/c++/4.6/bits/basic_string.h:
+
+/usr/include/c++/4.6/ext/atomicity.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/gthr.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/gthr-default.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/atomic_word.h:
+
+/usr/include/c++/4.6/initializer_list:
+
+/usr/include/c++/4.6/bits/basic_string.tcc:
+
+utils/pointer.hpp:
+
+utils/var_percent.hpp:
+
+utils/observer.hpp:
+
+/usr/include/c++/4.6/set:
+
+/usr/include/c++/4.6/bits/stl_tree.h:
+
+/usr/include/c++/4.6/bits/stl_set.h:
+
+/usr/include/c++/4.6/bits/stl_multiset.h:
+
+utils/ustring.hpp:
+
+utils/../src/vlcproc.hpp:
+
+../../../include/vlc_input.h:
+
+../../../include/vlc_es.h:
+
+../../../include/vlc_fourcc.h:
+
+../../../include/vlc_meta.h:
+
+../../../include/vlc_epg.h:
+
+../../../include/vlc_events.h:
+
+../../../include/vlc_input_item.h:
+
+../../../include/vlc_vout.h:
+
+../../../include/vlc_picture.h:
+
+../../../include/vlc_atomic.h:
+
+../../../include/vlc_filter.h:
+
+../../../include/vlc_subpicture.h:
+
+../../../include/vlc_text_style.h:
+
+../../../include/vlc_mouse.h:
+
+utils/../src/../vars/equalizer.hpp:
+
+utils/../src/../vars/../utils/var_percent.hpp:
+
+utils/../src/../vars/playtree.hpp:
+
+../../../include/vlc_playlist.h:
+
+utils/../src/../vars/../utils/var_tree.hpp:
+
+/usr/include/c++/4.6/list:
+
+/usr/include/c++/4.6/bits/stl_list.h:
+
+/usr/include/c++/4.6/bits/list.tcc:
+
+/usr/include/assert.h:
+
+utils/../src/../vars/../utils/variable.hpp:
+
+utils/../src/../vars/../utils/observer.hpp:
+
+utils/../src/../vars/../utils/ustring.hpp:
+
+utils/../src/../vars/../utils/var_percent.hpp:
+
+/usr/include/c++/4.6/map:
+
+/usr/include/c++/4.6/bits/stl_map.h:
+
+/usr/include/c++/4.6/bits/stl_multimap.h:
+
+utils/../src/../vars/time.hpp:
+
+utils/../src/../vars/volume.hpp:
+
+utils/../src/../utils/position.hpp:
+
+utils/../src/../utils/variable.hpp:
+
+utils/../src/../utils/observer.hpp:
+
+utils/../src/../utils/pointer.hpp:
+
+utils/../src/../utils/var_text.hpp:
+
+utils/../src/../utils/var_string.hpp:
+
+utils/../src/../controls/ctrl_video.hpp:
+
+utils/../src/../controls/ctrl_generic.hpp:
+
+utils/../src/../controls/../src/skin_common.hpp:
+
+utils/../src/../controls/../utils/pointer.hpp:
+
+utils/../src/../controls/../utils/ustring.hpp:
+
+utils/../src/../controls/../utils/observer.hpp:
+
+utils/../src/../controls/../commands/cmd_generic.hpp:
+
+utils/../src/../controls/../commands/../src/skin_common.hpp:
+
+utils/../src/../controls/../commands/../utils/pointer.hpp:
+
+utils/../src/../controls/../utils/position.hpp:
+
+utils/../src/../controls/../src/vout_window.hpp:
+
+utils/../src/../controls/../src/generic_window.hpp:
+
+utils/../src/../controls/../src/skin_common.hpp:
+
+utils/../src/../controls/../src/../utils/var_bool.hpp:
+
+utils/../src/../controls/../src/../utils/variable.hpp:
+
+utils/../src/../controls/../src/../utils/observer.hpp:
+
+../../../include/vlc_vout_window.h:
+
+utils/../src/var_manager.hpp:
+
+utils/../vars/time.hpp:
+
+utils/../vars/volume.hpp:

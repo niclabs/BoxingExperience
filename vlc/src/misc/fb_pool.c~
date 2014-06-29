@@ -1,0 +1,652 @@
+#include <vlc_common.h>
+#include <vlc_block.h>
+#include <vlc_fb_pool.h>
+#include <vlc_network.h>
+#include <vlc_url.h>
+#include <vlc_httpd.h>
+#include <limits.h>
+
+enum
+{
+    FB_POOL_READ,
+    FB_POOL_WRITE
+};
+
+static frame_t * fb_pool_EmptyFrameNew( void )
+{
+    frame_t *p_frame = malloc( sizeof( frame_t ) );
+    if( !p_frame )
+        return NULL;
+    p_frame->i_ref_count = 0;
+    p_frame->b_done_writing = false;
+    p_frame->p_first = NULL;
+    p_frame->i_timestamp = FB_EMPTY_FRAME_TIMESTAMP;
+    vlc_mutex_init( &p_frame->lock );
+    vlc_cond_init( &p_frame->wait_writing );
+    p_frame->i_size = 0;
+
+    return p_frame;
+}
+
+static void fb_pool_FreeFrame( frame_t * p_frame )
+{
+    if( p_frame->p_first )
+        block_ChainRelease( p_frame->p_first );
+    vlc_mutex_destroy( &p_frame->lock );
+}
+
+static void fb_pool_AddBlockToFrame( frame_t * p_frame, block_t * p_new_block )
+{   
+    vlc_mutex_lock( &p_frame->lock );
+    if( p_frame->p_first )
+    {
+        block_t *p_block, *p_prev;
+        p_block = p_prev = p_frame->p_first;
+        while( p_block )
+        {
+            p_prev = p_block;
+            p_block = p_block->p_next;
+        }
+        p_prev->p_next = p_new_block;
+    }
+    else
+    {
+        p_frame->p_first = p_new_block;
+        p_frame->i_timestamp = mdate();
+    }
+    p_frame->i_size += p_new_block->i_buffer;
+
+    if( p_new_block->i_flags & BLOCK_FLAG_TYPE_I )
+        p_frame->frame_type = FB_I_FRAME;
+    else if( p_new_block->i_flags & BLOCK_FLAG_TYPE_P )
+        p_frame->frame_type = FB_P_FRAME;
+    else if( p_new_block->i_flags & BLOCK_FLAG_TYPE_B )
+        p_frame->frame_type = FB_B_FRAME;
+
+    vlc_cond_broadcast( &p_frame->wait_writing );
+    vlc_mutex_unlock( &p_frame->lock );
+}
+
+int fb_pool_FrameSize( frame_t * p_frame )
+{
+    int i_size = 0;
+    block_t *p_block = p_frame->p_first;
+    while( p_block )
+    {
+        i_size += p_block->i_buffer;
+        p_block = p_block->p_next;
+    }
+
+    return i_size;
+}
+
+void printPool( frame_pool_t * p_pool, int32_t i_blocks_per_buffer,
+                FILE * p_dest )
+{
+    frame_t *p_frame = p_pool->p_first;
+    while( p_frame )
+    {
+        block_t *p_block = p_frame->p_first;
+        int blocks = 0;
+        if( p_pool->p_writing_frame != NULL && p_frame == p_pool->p_writing_frame && p_frame->i_ref_count > 0 )
+            fprintf( p_dest, "<" );
+        else if( p_pool->p_writing_frame != NULL && p_frame == p_pool->p_writing_frame )
+            fprintf( p_dest, "(" );
+        else if( p_frame->i_ref_count > 0 )
+            fprintf( p_dest, "{" );
+        else
+            fprintf( p_dest, " " );
+        if( p_frame->i_timestamp == FB_EMPTY_FRAME_TIMESTAMP )
+            fprintf( p_dest, " " );
+        else
+        {
+            if( p_frame->frame_type == FB_I_FRAME )
+                fprintf( p_dest, "I" );
+            if( p_frame->frame_type == FB_P_FRAME )
+                fprintf( p_dest, "P" );
+            if( p_frame->frame_type == FB_B_FRAME )
+                fprintf( p_dest, "B" );
+            if( p_frame->frame_type == FB_HEADER )
+                fprintf( p_dest, "H" );
+            if( p_frame->frame_type == FB_OTHER )
+                fprintf( p_dest, "O" );
+        }
+        if( p_pool->p_writing_frame != NULL && p_frame == p_pool->p_writing_frame && p_frame->i_ref_count > 0 )
+            fprintf( p_dest, "%2d>", p_frame->i_ref_count );
+        else if( p_pool->p_writing_frame != NULL && p_frame == p_pool->p_writing_frame )
+            fprintf( p_dest, "  )" );
+        else if( p_frame->i_ref_count > 0 )
+            fprintf( p_dest, "%2d}", p_frame->i_ref_count );
+        else
+            fprintf( p_dest, "   " );
+        p_frame = p_frame->p_next;
+    }
+    fprintf( p_dest, "\n" );
+}
+
+frame_pool_t * fb_pool_FramePoolNew( int i_size, char * psz_allocation, 
+                                     char * psz_replacement )
+{
+    uint8_t i_allocation_alg, i_replacement_alg;
+
+    frame_pool_t *p_pool = malloc( sizeof( frame_pool_t ) );
+    if( !p_pool )
+        return NULL;
+    if( !strcmp( psz_allocation, "OF" ) ) i_allocation_alg = FB_ALLOC_OF;
+    else if( !strcmp( psz_allocation, "NF" ) ) i_allocation_alg = FB_ALLOC_NF;
+    else if( !strcmp( psz_allocation, "MAX" ) ) i_allocation_alg = FB_ALLOC_MAX;
+    else if( !strcmp( psz_allocation, "MOF" ) ) i_allocation_alg = FB_ALLOC_MOF;
+    else if( !strcmp( psz_allocation, "ANY" ) ) i_allocation_alg = FB_ALLOC_ANY;
+    free( psz_allocation );
+    if( !strcmp( psz_replacement, "OF" ) ) i_replacement_alg = FB_REPLACE_OF;
+    else if( !strcmp( psz_replacement, "NF" ) ) i_replacement_alg = FB_REPLACE_NF;
+    else if( !strcmp( psz_replacement, "ANY" ) ) i_replacement_alg = FB_REPLACE_ANY;
+    free( psz_replacement );
+    p_pool->i_replacement_alg = i_replacement_alg;
+    p_pool->i_allocation_alg = i_allocation_alg;
+    p_pool->p_first = NULL;
+    for( uint32_t i = 0; i < i_size; i++ )
+    {
+        frame_t *p_new = fb_pool_EmptyFrameNew();
+        p_new->p_next = p_pool->p_first;
+        p_pool->p_first = p_new;
+    }
+    p_pool->i_frames = i_size;
+    p_pool->p_writing_frame = p_pool->p_first;
+    vlc_mutex_init( &p_pool->lock );
+    vlc_cond_init( &p_pool->wait_ref_count );
+    vlc_cond_init( &p_pool->wait_timestamp );
+
+    return p_pool;
+}
+
+static frame_t * pool_lookup( frame_pool_t * p_pool, int64_t i_timestamp, 
+                              int mode )
+{
+    frame_t *p_frame = p_pool->p_first;
+    while( p_frame )
+    {
+        switch( mode )
+        {
+            case FB_POOL_READ:
+                if( p_frame->i_timestamp != FB_EMPTY_FRAME_TIMESTAMP && 
+                    p_frame->i_timestamp > i_timestamp )
+                    return p_frame;
+                break;
+            case FB_POOL_WRITE:
+                if( p_frame->i_ref_count == 0 )
+                    return p_frame;
+                break;
+        }
+        p_frame = p_frame->p_next;
+    }
+    return NULL;
+}
+
+static frame_t * first_allocatable_frame( frame_pool_t * p_pool, int64_t i_timestamp )
+{
+    return pool_lookup( p_pool, i_timestamp, FB_POOL_READ );
+} 
+
+static frame_t * first_replaceable_frame( frame_pool_t * p_pool )
+{
+    return pool_lookup( p_pool, -1, FB_POOL_WRITE );
+}
+
+static frame_t * get_read_buffer( frame_pool_t * p_pool, int64_t i_timestamp )
+{
+    int64_t timestamp;
+    uint32_t ref_count;
+    frame_t *p_read = NULL;
+    frame_t *p_frame = p_pool->p_first;
+
+    while( p_frame )
+    {
+        timestamp = p_frame->i_timestamp;
+        ref_count = p_frame->i_ref_count;
+
+        if( timestamp == FB_EMPTY_FRAME_TIMESTAMP || 
+            timestamp <= i_timestamp )
+        {
+            p_frame = p_frame->p_next;
+            continue;
+        }
+
+        if( !p_read && timestamp > i_timestamp )
+        {
+            p_read = p_frame;
+            p_frame = p_frame->p_next;
+            continue;
+        }
+
+        switch( p_pool->i_allocation_alg )
+        {
+            /* OF: send the oldest frame in the pool */
+            case FB_ALLOC_OF:
+                if( timestamp < p_read->i_timestamp )
+                    p_read = p_frame;
+                break;
+            /* NF: send the newest frame in the pool */
+            case FB_ALLOC_NF:
+                if( timestamp > p_read->i_timestamp )
+                    p_read = p_frame;
+                break;
+            /* MAX: send the frame with the highest reference count; resolve
+             * conflicts using the newest timestamp */
+            case FB_ALLOC_MAX:
+                if( ref_count > p_read->i_ref_count || 
+                    ( ref_count == p_read->i_ref_count && timestamp > p_read->i_timestamp ) )
+                    p_read = p_frame;
+                break;
+            /* MOF: send the frame with the highest reference count; resolve
+             * conflicts using the oldest timestamp */
+            case FB_ALLOC_MOF:
+                if( ref_count > p_read->i_ref_count || 
+                    ( ref_count == p_read->i_ref_count && timestamp < p_read->i_timestamp ) )
+                    p_read = p_frame;
+                break;
+            /* ANY: send any frame (i.e. the first suitable frame) */
+            case FB_ALLOC_ANY:
+                break;
+        }
+        p_frame = p_frame->p_next;            
+    }
+
+    if( p_read )
+        p_read->i_ref_count++;
+
+    return p_read;
+}
+
+frame_t * fb_pool_GetReadBuffer( buffered_stream_t * p_stream, 
+                                 int64_t i_timestamp )
+{
+    frame_t *p_read = NULL;
+    frame_pool_t *p_pool = p_stream->p_pool;
+
+    vlc_mutex_lock( &p_pool->lock );
+
+    while( !(p_read = get_read_buffer(p_pool,i_timestamp)) )
+    {
+        vlc_cond_wait( &p_pool->wait_timestamp, &p_pool->lock );
+        if( !p_stream->b_streaming )
+        {
+            vlc_mutex_unlock( &p_pool->lock );
+            return NULL;
+        }
+    }
+
+    vlc_mutex_unlock( &p_pool->lock );
+
+    return p_read;
+}
+
+void fb_pool_ReleaseReadBuffer( buffered_stream_t * p_stream, 
+                                frame_t * p_frame )
+{
+    vlc_mutex_lock( &p_stream->p_pool->lock );
+
+    /* decrease the frame's reference count */
+    vlc_mutex_lock( &p_frame->lock );
+    p_frame->i_ref_count--;
+    vlc_mutex_unlock( &p_frame->lock );
+
+    /* wake up thread waiting for a frame to overwrite */
+    if( p_frame->i_ref_count == 0 )
+        vlc_cond_signal( &p_stream->p_pool->wait_ref_count );
+
+    vlc_mutex_unlock( &p_stream->p_pool->lock );
+}
+
+static void fb_pool_FreeFramePool( frame_pool_t * p_pool )
+{
+    frame_t *p_frame = p_pool->p_first;
+    frame_t *p_next;
+    while( p_frame )
+    {
+        p_next = p_frame->p_next;
+        fb_pool_FreeFrame( p_frame );
+        p_frame = p_next;
+    }
+    vlc_mutex_destroy( &p_pool->lock );
+    vlc_cond_destroy( &p_pool->wait_ref_count );
+    vlc_cond_destroy( &p_pool->wait_timestamp );
+}
+
+simple_host_t * fb_pool_SimpleHostNew( buffered_stream_t * p_stream, 
+                                       vlc_object_t *p_this, const char *path )
+{
+    char *hostname = var_InheritString( p_this, "http-host" );
+    unsigned port = var_InheritInteger( p_this, "http-port" );
+
+    vlc_url_t url;
+    vlc_UrlParse( &url, hostname, 0 );
+    free( hostname );
+    simple_host_t * p_host = malloc( sizeof( simple_host_t ) );
+    if( url.i_port != 0 )
+    {
+        msg_Err( p_this, "Ignoring port %d (using %d)", url.i_port, port );
+        msg_Info( p_this, "Specify port %d separately with the "
+                          "http-port option instead.", url.i_port );
+    }
+    p_host->fds = net_ListenTCP( p_this, url.psz_host, port );
+    if( p_host->fds == NULL )
+    {
+        msg_Err( p_this, "cannot create socket(s) for HTTP host" );
+        vlc_UrlClean( &url );
+        return NULL;
+    }
+    for (p_host->nfd = 0; p_host->fds[p_host->nfd] != -1; p_host->nfd++);
+    vlc_mutex_init( &p_host->lock );
+    p_host->p_stream = p_stream;
+    p_host->psz_url = strdup( path );
+    p_host->b_running = true;
+    p_host->client = NULL;
+    p_host->i_client = 0;
+
+    vlc_UrlClean( &url );
+
+    return p_host;
+}
+
+void fb_pool_FreeSimpleHost( simple_host_t * p_host )
+{
+    net_ListenClose( p_host->fds );
+    free( p_host->psz_url );
+    free( p_host->client );
+    vlc_mutex_destroy( &p_host->lock );
+}
+
+client_data_t * fb_pool_ClientDataNew( buffered_stream_t * p_stream, 
+                                       httpd_client_t * p_client, int i_fd, 
+                                       char * psz_url )
+{
+    client_data_t *p_cl_data = malloc( sizeof( client_data_t ) );
+    if( p_cl_data == NULL )
+        return NULL;
+    p_cl_data->p_stream = p_stream;
+    p_cl_data->p_client = p_client;
+    p_cl_data->fd = i_fd;
+    p_cl_data->psz_url = psz_url;
+
+    return p_cl_data;
+}
+
+void fb_pool_FreeClientData( client_data_t * p_client_data )
+{
+    vlc_mutex_destroy( &p_client_data->lock );
+}
+
+void fb_pool_SimpleHostStop( simple_host_t * p_host )
+{
+    vlc_mutex_lock( &p_host->lock );
+    p_host->b_running = false;
+    vlc_mutex_unlock( &p_host->lock );
+}
+
+buffered_stream_t * fb_pool_BufferedStreamNew( frame_pool_t * p_pool, 
+                                               int32_t i_blocks_per_buffer )
+{
+    buffered_stream_t *p_stream = malloc( sizeof( buffered_stream_t ) );
+    if( p_stream == NULL )
+        return NULL;
+    p_stream->p_pool = p_pool;
+    p_stream->p_header = NULL;
+    p_stream->i_header = 0;
+    p_stream->i_blocks_per_buffer = i_blocks_per_buffer;
+    p_stream->b_streaming = true;
+    vlc_mutex_init( &p_stream->lock );
+
+    return p_stream;
+}
+
+int fb_pool_BufferedStreamHeader( buffered_stream_t * p_stream, 
+                                  uint8_t *p_data, int i_data )
+{
+    vlc_mutex_lock( &p_stream->lock );
+    free( p_stream->p_header );
+    p_stream->p_header = NULL;
+
+    p_stream->i_header = i_data;
+    if( i_data > 0 )
+    {
+        p_stream->p_header = xmalloc( i_data );
+        memcpy( p_stream->p_header, p_data, i_data );
+    }
+    vlc_mutex_unlock( &p_stream->lock );
+
+    return VLC_SUCCESS;
+}
+
+static frame_t * get_write_buffer( frame_pool_t * p_pool, block_t * p_new_block )
+{
+    int64_t timestamp, last_timestamp, prev_pb_ts = -1;
+    frame_t *p_frame = p_pool->p_first;
+    frame_t *p_write = NULL;
+    bool use_i_frame = false;
+
+    while( p_frame )
+    {
+        /* only look at frames that no client is reading */
+        if( p_frame->i_ref_count == 0 )
+        {
+            timestamp = p_frame->i_timestamp;
+            if( timestamp == FB_EMPTY_FRAME_TIMESTAMP )
+            {
+                /* we prefer overwriting empty frames when available */
+                p_write = p_frame;
+                break;
+            }
+            if( p_write == NULL )
+            {
+                p_write = p_frame;
+                p_frame = p_frame->p_next;
+                continue;
+            }
+            switch( p_pool->i_replacement_alg )
+            {
+                /* OF: overwrite oldest frame */
+                case FB_REPLACE_OF:
+                    if( timestamp <= p_write->i_timestamp )
+                        p_write = p_frame;
+                    break;
+                /* NF: overwrite newest frame */
+                case FB_REPLACE_NF:
+                    if( timestamp >= p_write->i_timestamp )
+                        p_write = p_frame;
+                    break;
+                /* ANY: overwrite any frame (i.e. the first suitable frame) */
+                case FB_REPLACE_ANY:
+                    break;
+            }
+        }
+        p_frame = p_frame->p_next;
+    }
+
+    if( p_write != NULL )
+        p_write->i_timestamp = FB_EMPTY_FRAME_TIMESTAMP;
+
+    return p_write;
+}
+
+static void fb_pool_WriteToBuffer( block_t * p_block, 
+                                   frame_pool_t * p_pool )
+{
+    frame_t *p_write;
+
+    vlc_mutex_lock( &p_pool->lock );
+
+    while( !( p_write = get_write_buffer( p_pool, p_block ) ) )
+        vlc_cond_wait( &p_pool->wait_ref_count, &p_pool->lock );
+
+    if( p_write->p_first )
+        block_ChainRelease( p_write->p_first );
+    p_write->p_first = p_block;
+    p_write->i_timestamp = mdate();
+    p_write->i_ref_count = 0;
+    p_write->b_done_writing = false;
+    p_write->i_size = p_block->i_buffer;
+
+    if( p_block->i_flags & BLOCK_FLAG_HEADER )
+        p_write->frame_type = FB_HEADER;
+    else if( p_block->i_flags & BLOCK_FLAG_TYPE_I )
+        p_write->frame_type = FB_I_FRAME;
+    else if( p_block->i_flags & BLOCK_FLAG_TYPE_P )
+        p_write->frame_type = FB_P_FRAME;
+    else if( p_block->i_flags & BLOCK_FLAG_TYPE_B )
+        p_write->frame_type = FB_B_FRAME;
+    else
+        p_write->frame_type = FB_OTHER;
+
+    p_pool->p_writing_frame = p_write;
+    vlc_cond_broadcast( &p_pool->wait_timestamp );
+
+    vlc_mutex_unlock( &p_pool->lock );
+}
+
+int64_t fb_pool_BufferedStreamSend( buffered_stream_t * p_stream, 
+                                    block_t * p_block )
+{
+    frame_pool_t *p_pool = p_stream->p_pool;
+    static int frames_after_header = 0;
+    static int64_t blocks = 0;
+    static bool drop_frame = false;
+    static int64_t frames_written = 0;
+
+    /* write to a new buffer (instead of p_pool->p_writing_frame) when a
+     * header block or frame block is received, or when p_writing_frame
+     * contains p_stream->i_blocks_per_buffer blocks */
+    if( ( frames_after_header == 0 && p_block->i_flags & ( BLOCK_FLAG_HEADER | 
+                                                           BLOCK_FLAG_TYPE_I | 
+                                                           BLOCK_FLAG_TYPE_P | 
+                                                           BLOCK_FLAG_TYPE_B ) )
+        || blocks == p_stream->i_blocks_per_buffer )
+    {
+        if( blocks == p_stream->i_blocks_per_buffer )
+            frames_after_header = 0;
+        blocks = 0;
+        
+        if( p_block->i_flags & BLOCK_FLAG_HEADER )
+            frames_after_header++;
+
+        if( p_pool->p_writing_frame->i_timestamp != FB_EMPTY_FRAME_TIMESTAMP )
+        {
+            vlc_mutex_lock( &p_pool->p_writing_frame->lock );
+            /* since this is the start of a new frame, the previous frame
+             * has been written to the buffer */
+            p_pool->p_writing_frame->b_done_writing = true;
+            frames_written++;
+            vlc_cond_broadcast( &p_pool->p_writing_frame->wait_writing );
+            vlc_mutex_unlock( &p_pool->p_writing_frame->lock );
+        }
+
+        fb_pool_WriteToBuffer( p_block, p_pool );
+    }
+    else
+    {
+        if( p_block->i_flags & ( BLOCK_FLAG_TYPE_I | 
+                                 BLOCK_FLAG_TYPE_P | 
+                                 BLOCK_FLAG_TYPE_B ) )
+            frames_after_header--;
+        if( !drop_frame )
+            fb_pool_AddBlockToFrame( p_pool->p_writing_frame, p_block );
+        else
+            block_Release( p_block );
+    }
+    blocks++;
+    //printPool( p_pool, p_stream->i_blocks_per_buffer, stdout );
+
+    return frames_written;
+}
+
+void fb_pool_FreeBufferedStream( buffered_stream_t * p_stream )
+{
+    vlc_mutex_destroy( &p_stream->lock );
+    free( p_stream->p_header );
+    fb_pool_FreeFramePool( p_stream->p_pool );
+}
+
+int buf_flags_SentFrames( int i_from, int i_size, unsigned char * p_flags )
+{
+    int i_sent = 0;
+    int i_read = 0;
+    int i_byte = i_from / CHAR_BIT;
+    int i_bit = i_from % CHAR_BIT;
+
+    while( i_read < i_size )
+    {
+        if( p_flags[i_byte] & ( 1 << i_bit ) )
+            i_sent++;
+        i_bit = ( i_bit+1 ) % CHAR_BIT;
+        if( i_bit == 0 )
+            i_byte++;
+        i_read++;
+    }
+
+    return i_sent;
+}
+
+void buf_flags_SetBit( int i, unsigned char * p_flags )
+{
+    int i_byte = i / CHAR_BIT;
+    p_flags[i_byte] |= 1 << ( i % CHAR_BIT );
+}
+
+void buf_flags_ClearBits( int i_from, int i_size, unsigned char * p_flags )
+{
+    int i_cleared = 0;
+    int i_byte = i_from / CHAR_BIT;
+    int i_bit = i_from % CHAR_BIT;
+
+    while( i_cleared < i_size )
+    {
+        p_flags[i_byte] &= ~( 1 << i_bit );
+        i_cleared++;
+        i_bit = ( i_bit+1 ) % CHAR_BIT;
+        if( i_bit == 0 )
+            i_byte++;
+    }
+}
+
+unsigned char * buf_flags_Copy( int i_from, int i_size, unsigned char * p_flags )
+{
+    int i_byte = i_from / CHAR_BIT;
+    int i_bit = i_from % CHAR_BIT;
+    int i_copy = 1 + i_size / CHAR_BIT;
+    unsigned char *p_copy = malloc( i_copy );
+    for( int i = 0; i < i_copy; i++ )
+        p_copy[i] = 0;
+
+    int i_copy_byte = 0;
+    int i_copy_bit = 0;
+    int i_copied = 0;
+
+    while( i_copied < i_size )
+    {
+        if( p_flags[i_byte] & ( 1 << i_bit ) )
+            p_copy[i_copy_byte] |= 1 << i_copy_bit;
+        i_bit = ( i_bit+1 ) % CHAR_BIT;
+        if( i_bit == 0 )
+            i_byte++;
+        i_copy_bit = ( i_copy_bit+1 ) % CHAR_BIT;
+        if( i_copy_bit == 0 )
+            i_copy_byte++;
+        i_copied++;
+    }
+
+    return p_copy;
+}
+
+uint32_t fb_pool_PoolSize( frame_pool_t * p_pool )
+{
+    frame_t *p_frame = p_pool->p_first;
+    uint32_t i_size = 0;
+    
+    while( p_frame )
+    {
+        i_size += p_frame->i_size;
+        p_frame = p_frame->p_next;
+    }
+
+    return i_size;
+}

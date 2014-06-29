@@ -1,0 +1,175 @@
+# ./configure --target=x86-linux-gcc --enable-runtime-cpu-detect --disable-install-bins --disable-install-srcs --disable-install-libs --disable-install-docs --disable-examples --disable-vp8-decoder --enable-pic
+Configuring selected codecs
+  enabling vp8_encoder
+Configuring for target 'x86-linux-gcc'
+  enabling x86
+  enabling runtime_cpu_detect
+  enabling mmx
+  enabling sse
+  enabling sse2
+  enabling sse3
+  enabling ssse3
+  enabling sse4_1
+check_cflags -fomit-frame-pointer
+check_cc -fomit-frame-pointer
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+  using yasm
+check_cflags -O3
+check_cc -O3
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+check_cflags -fPIC
+check_cc -fPIC
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+check_cflags -D_FORTIFY_SOURCE=0
+check_cc -D_FORTIFY_SOURCE=0
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cc
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	    unsigned int e = 'O'<<24 | '2'<<16 | 'B'<<8 | 'E';
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_header pthread.h
+check_cpp
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "pthread.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_header unistd.h
+check_cpp
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "unistd.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wall
+check_cc -Wall
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wdeclaration-after-statement
+check_cc -Wdeclaration-after-statement
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wdisabled-optimization
+check_cc -Wdisabled-optimization
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wpointer-arith
+check_cc -Wpointer-arith
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wtype-limits
+check_cc -Wtype-limits
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wcast-qual
+check_cc -Wcast-qual
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_cflags -Wno-unused-function
+check_cc -Wno-unused-function
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+  enabling postproc
+check_header stdio.h
+check_cpp
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "stdio.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_ld
+check_cc
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	int main(void) {return 0;}
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -c -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+gcc -m32 -o /tmp/vpx-conf-28310-8226.x /tmp/vpx-conf-28310-11331.o -lpthread
+check_header stdint.h
+check_cpp
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "stdint.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_header pthread.h
+check_cpp
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "pthread.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_header sys/mman.h
+check_cpp
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "sys/mman.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition
+check_header vpx/vpx_integer.h -I/home/jcarrera/Documents/vlc/contrib/native/libvpx
+check_cpp -I/home/jcarrera/Documents/vlc/contrib/native/libvpx
+BEGIN /tmp/vpx-conf-28310-14490.c
+    1	#include "vpx/vpx_integer.h"
+    2	int x;
+END /tmp/vpx-conf-28310-14490.c
+gcc -m32 -fomit-frame-pointer -O3 -fPIC -D_FORTIFY_SOURCE=0 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -Wall -Wdeclaration-after-statement -Wdisabled-optimization -Wpointer-arith -Wtype-limits -Wcast-qual -Wno-unused-function -I/home/jcarrera/Documents/vlc/contrib/native/libvpx -E -o /tmp/vpx-conf-28310-11331.o /tmp/vpx-conf-28310-14490.c
+<command-line>:0:0: warning: "_FORTIFY_SOURCE" redefined [enabled by default]
+<built-in>:0:0: note: this is the location of the previous definition

@@ -1,0 +1,11 @@
+libskins2_plugin_la-ft2_err.lo: src/ft2_err.c /usr/include/ft2build.h \
+ /usr/include/freetype2/freetype/config/ftheader.h src/ft2_err.h \
+ /usr/include/freetype2/freetype/fterrdef.h
+
+/usr/include/ft2build.h:
+
+/usr/include/freetype2/freetype/config/ftheader.h:
+
+src/ft2_err.h:
+
+/usr/include/freetype2/freetype/fterrdef.h:

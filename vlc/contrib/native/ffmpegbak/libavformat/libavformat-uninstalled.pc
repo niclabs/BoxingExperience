@@ -1,0 +1,12 @@
+prefix=
+exec_prefix=
+libdir=${pcfiledir}
+includedir=.
+
+Name: libavformat
+Description: Libav container format library
+Version: 54.21.3
+Requires: libavcodec = 54.41.1
+Conflicts:
+Libs: ${libdir}/libavformat.a -ldl -lvpx -lopenjpeg -lmp3lame -lgsm -lm -pthread -lz 
+Cflags: -I${includedir}

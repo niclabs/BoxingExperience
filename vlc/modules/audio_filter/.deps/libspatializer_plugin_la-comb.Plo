@@ -1,0 +1,6 @@
+libspatializer_plugin_la-comb.lo: spatializer/comb.cpp \
+ spatializer/comb.hpp spatializer/denormals.h
+
+spatializer/comb.hpp:
+
+spatializer/denormals.h:

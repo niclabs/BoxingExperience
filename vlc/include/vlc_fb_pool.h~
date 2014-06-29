@@ -1,0 +1,136 @@
+#ifndef VLC_FB_POOL_H
+#define VLC_FB_POOL_H
+
+/* timestamp used for the empty frames that fill the pool when it is created */
+#define FB_EMPTY_FRAME_TIMESTAMP -1
+
+#include "vlc_block.h"
+#include "vlc_threads.h"
+#include "vlc_httpd.h"
+
+enum
+{
+    FB_ALLOC_OF,
+    FB_ALLOC_NF,
+    FB_ALLOC_MAX,
+    FB_ALLOC_MAX_I,
+    FB_ALLOC_MOF,
+    FB_ALLOC_ANY,
+    FB_REPLACE_OF,
+    FB_REPLACE_OF_I,
+    FB_REPLACE_NF,
+    FB_REPLACE_ANY
+};
+
+enum
+{
+    FB_I_FRAME, 
+    FB_P_FRAME, 
+    FB_B_FRAME, 
+    FB_HEADER, 
+    FB_OTHER
+};
+
+/* group of packets that form a single video frame */
+typedef struct frame_t
+{
+    block_t        *p_first; /* first block in the group */
+    struct frame_t *p_next; /* next frame in the pool */
+    int64_t         i_timestamp; /* timestamp for blocks in the group */
+    uint32_t        i_ref_count; /* reference counter, counts reading client threads */
+    bool            b_done_writing; /* true if the frame is complete */
+    vlc_cond_t      wait_writing; /* wait for more packets to be written */
+    vlc_mutex_t     lock;
+    int32_t         i_size;
+    int             frame_type;
+} frame_t;
+
+/* frame pool */
+typedef struct frame_pool_t
+{
+    frame_t        *p_first; /* first frame in the pool */
+    frame_t        *p_writing_frame; /* frame currently being written */
+    vlc_mutex_t     lock;
+    vlc_cond_t      wait_ref_count; /* wait for a frame with i_ref_count = 0 */
+    vlc_cond_t      wait_timestamp; /* wait for a frame with a more recent timestamp */
+    uint8_t         i_replacement_alg;
+    uint8_t         i_allocation_alg;
+    int             i_frames;
+} frame_pool_t;
+
+/* buffered stream - holds references to frame buffer pool, header buffer */
+typedef struct buffered_stream_t
+{
+    frame_pool_t   *p_pool;
+    uint8_t        *p_header;
+    int             i_header;
+    int32_t         i_blocks_per_buffer;
+    bool            b_streaming;
+    int32_t         i_fast_clients;
+    vlc_mutex_t     lock;
+} buffered_stream_t;
+
+/* client data - data for client threads */
+typedef struct client_data_t
+{
+    buffered_stream_t  *p_stream;
+    httpd_client_t     *p_client;
+    int                 fd;
+    char               *psz_url;
+    vlc_mutex_t         lock;
+    vlc_thread_t        thread;
+} client_data_t;
+
+/* simple host - data for the host thread */
+typedef struct simple_host_t
+{
+    buffered_stream_t  *p_stream;
+    char               *psz_url;
+    int                *fds;
+    unsigned            nfd;
+    vlc_thread_t        thread;
+    vlc_mutex_t         lock;
+    bool                b_running;
+    int                 i_client;
+    client_data_t     **client;
+} simple_host_t;
+
+/* frame */
+VLC_API int fb_pool_FrameSize( frame_t * );
+
+/* frame pool */
+VLC_API frame_pool_t * fb_pool_FramePoolNew( int, char * psz_allocation, char * psz_replacement );
+VLC_API frame_t * fb_pool_GetReadBuffer( buffered_stream_t *, int64_t );
+VLC_API void fb_pool_ReleaseReadBuffer( buffered_stream_t *, frame_t * );
+VLC_API uint32_t fb_pool_PoolSize( frame_pool_t * );
+
+/* host */
+VLC_API simple_host_t * fb_pool_SimpleHostNew( buffered_stream_t *, vlc_object_t *, const char * psz_path );
+VLC_API void fb_pool_FreeSimpleHost( simple_host_t * );
+VLC_API void fb_pool_SimpleHostStop( simple_host_t * );
+
+/* client */
+VLC_API client_data_t * fb_pool_ClientDataNew( buffered_stream_t *, httpd_client_t *, int, char * );
+VLC_API void fb_pool_FreeClientData( client_data_t * );
+
+/* buffered stream */
+VLC_API buffered_stream_t * fb_pool_BufferedStreamNew( frame_pool_t *, int32_t i_blocks_per_buffer );
+VLC_API int64_t fb_pool_BufferedStreamSend( buffered_stream_t *, block_t * );
+VLC_API int fb_pool_BufferedStreamHeader( buffered_stream_t *, uint8_t *p_data, int i_data );
+VLC_API void fb_pool_FreeBufferedStream( buffered_stream_t * );
+
+VLC_API void printPool( frame_pool_t *, int32_t, FILE * );
+
+/* these functions are used to measure FPS from the standard VLC server */
+/* p_flags is an array of char values. each bit in the array represents a position 
+ * in VLC's HTTPd circular buffer. if i < j, p_flags[i] == 1, p_flags[j] == 1 and 
+ * there are only zeroes between them, then a full frame is contained between 
+ * i and j in VLC's buffer. we use this array instead of VLC's buffer to know
+ * when a full frame is sent to client, and we update the array every time a
+ * new frame is written to the buffer */
+VLC_API int buf_flags_SentFrames( int i_from, int i_size, unsigned char * p_flags );
+VLC_API void buf_flags_SetBit( int i, unsigned char * p_flags );
+VLC_API void buf_flags_ClearBits( int i_from, int i_size, unsigned char * p_flags );
+VLC_API unsigned char * buf_flags_Copy( int i_from, int i_size, unsigned char * p_flags );
+
+#endif

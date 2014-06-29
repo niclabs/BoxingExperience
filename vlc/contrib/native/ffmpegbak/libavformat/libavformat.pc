@@ -1,0 +1,14 @@
+prefix=/home/jcarrera/Documents/vlc/contrib/i686-linux-gnu
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavformat
+Description: Libav container format library
+Version: 54.21.3
+Requires: libavcodec = 54.41.1
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavformat -ldl -lvpx -lopenjpeg -lmp3lame -lgsm -lm -pthread -lz
+Libs.private: 
+Cflags: -I${includedir}

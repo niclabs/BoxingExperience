@@ -1,0 +1,13 @@
+Cliente con errores?
+ESTE: 
+./vlc --avcodec-error-resilience=3 http://10.10.0.2:8080
+./vlc --avcodec-error-resilience=3 --no-video http://10.10.0.2:8080
+
+./launch-clients --clients=1 --fast-clients=0 --speed=150 --delay=500 --scale=0.6 --range=1 http://localhost:8080 --show-slow=1 --show-fast=0 --avcodec-error-resilience=3
+
+
+Servidor
+./vlc -vvv ./big_buck_bunny_480p_surround-fix.avi --sout '#transcode{vcodec=mjpg,venc=ffmpeg{qmin=10,qmax=10}}:standard{access=http{use-algorithms,allocation=MAX,replacement=NF,frame-buffers=10},mux=mpjpeg,dst=@:8080}'
+
+./vlc -vvv ./big_buck_bunny_480p_surround-fix.avi --sout '#transcode{vcodec=mjpg,venc=ffmpeg{qmin=10,qmax=10}}:standard{access=http,mux=mpjpeg,dst=@:8080}'
+

@@ -1,0 +1,2 @@
+components/playlist/libqt4_plugin_la-ml_model.moc.lo: \
+ components/playlist/ml_model.moc.cpp

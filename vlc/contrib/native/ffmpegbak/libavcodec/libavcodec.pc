@@ -1,0 +1,14 @@
+prefix=/home/jcarrera/Documents/vlc/contrib/i686-linux-gnu
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavcodec
+Description: Libav codec library
+Version: 54.41.1
+Requires: libavutil = 52.7.0
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -lavcodec -ldl -lvpx -lopenjpeg -lmp3lame -lgsm -lm -pthread -lz
+Libs.private: 
+Cflags: -I${includedir}

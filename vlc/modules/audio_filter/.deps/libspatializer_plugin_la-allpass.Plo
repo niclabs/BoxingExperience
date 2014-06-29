@@ -1,0 +1,6 @@
+libspatializer_plugin_la-allpass.lo: spatializer/allpass.cpp \
+ spatializer/allpass.hpp spatializer/denormals.h
+
+spatializer/allpass.hpp:
+
+spatializer/denormals.h:

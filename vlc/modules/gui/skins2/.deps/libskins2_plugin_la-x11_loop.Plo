@@ -1,0 +1,547 @@
+libskins2_plugin_la-x11_loop.lo: x11/x11_loop.cpp \
+ /usr/include/X11/keysym.h /usr/include/X11/keysymdef.h x11/x11_loop.hpp \
+ /usr/include/X11/Xlib.h /usr/include/i386-linux-gnu/sys/types.h \
+ /usr/include/features.h /usr/include/i386-linux-gnu/bits/predefs.h \
+ /usr/include/i386-linux-gnu/sys/cdefs.h \
+ /usr/include/i386-linux-gnu/bits/wordsize.h \
+ /usr/include/i386-linux-gnu/gnu/stubs.h \
+ /usr/include/i386-linux-gnu/gnu/stubs-32.h \
+ /usr/include/i386-linux-gnu/bits/types.h \
+ /usr/include/i386-linux-gnu/bits/typesizes.h /usr/include/time.h \
+ /usr/lib/gcc/i686-linux-gnu/4.6/include/stddef.h /usr/include/endian.h \
+ /usr/include/i386-linux-gnu/bits/endian.h \
+ /usr/include/i386-linux-gnu/bits/byteswap.h \
+ /usr/include/i386-linux-gnu/sys/select.h \
+ /usr/include/i386-linux-gnu/bits/select.h \
+ /usr/include/i386-linux-gnu/bits/sigset.h \
+ /usr/include/i386-linux-gnu/bits/time.h \
+ /usr/include/i386-linux-gnu/bits/select2.h \
+ /usr/include/i386-linux-gnu/sys/sysmacros.h \
+ /usr/include/i386-linux-gnu/bits/pthreadtypes.h /usr/include/X11/X.h \
+ /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h \
+ x11/../src/os_loop.hpp x11/../src/skin_common.hpp ../../../config.h \
+ ../../../include/vlc_fixups.h ../../../include/vlc_common.h \
+ ../../../include/vlc_config.h /usr/include/stdlib.h \
+ /usr/include/i386-linux-gnu/bits/waitflags.h \
+ /usr/include/i386-linux-gnu/bits/waitstatus.h /usr/include/xlocale.h \
+ /usr/include/alloca.h /usr/include/i386-linux-gnu/bits/stdlib.h \
+ /usr/lib/gcc/i686-linux-gnu/4.6/include/stdarg.h /usr/include/string.h \
+ /usr/include/i386-linux-gnu/bits/string3.h /usr/include/stdio.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/include/i386-linux-gnu/bits/stdio_lim.h \
+ /usr/include/i386-linux-gnu/bits/sys_errlist.h \
+ /usr/include/i386-linux-gnu/bits/stdio.h \
+ /usr/include/i386-linux-gnu/bits/stdio2.h /usr/include/inttypes.h \
+ /usr/lib/gcc/i686-linux-gnu/4.6/include/stdint.h /usr/include/stdint.h \
+ /usr/include/i386-linux-gnu/bits/wchar.h ../../../include/vlc_mtime.h \
+ ../../../include/vlc_threads.h /usr/include/unistd.h \
+ /usr/include/i386-linux-gnu/bits/posix_opt.h \
+ /usr/include/i386-linux-gnu/bits/environments.h \
+ /usr/include/i386-linux-gnu/bits/confname.h /usr/include/getopt.h \
+ /usr/include/i386-linux-gnu/bits/unistd.h /usr/include/pthread.h \
+ /usr/include/sched.h /usr/include/i386-linux-gnu/bits/sched.h \
+ /usr/include/i386-linux-gnu/bits/timex.h \
+ /usr/include/i386-linux-gnu/bits/setjmp.h /usr/include/semaphore.h \
+ /usr/include/i386-linux-gnu/bits/semaphore.h \
+ ../../../include/vlc_arrays.h ../../../include/vlc_messages.h \
+ ../../../include/vlc_objects.h ../../../include/vlc_variables.h \
+ ../../../include/vlc_main.h ../../../include/vlc_configuration.h \
+ ../../../include/vlc_interface.h ../../../include/vlc_charset.h \
+ ../../../include/vlc_fs.h /usr/include/dirent.h \
+ /usr/include/i386-linux-gnu/bits/dirent.h \
+ /usr/include/i386-linux-gnu/bits/posix1_lim.h \
+ /usr/include/i386-linux-gnu/bits/local_lim.h /usr/include/linux/limits.h \
+ /usr/include/c++/4.6/string \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/c++config.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/os_defines.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/cpu_defines.h \
+ /usr/include/c++/4.6/bits/stringfwd.h \
+ /usr/include/c++/4.6/bits/char_traits.h \
+ /usr/include/c++/4.6/bits/stl_algobase.h \
+ /usr/include/c++/4.6/bits/functexcept.h \
+ /usr/include/c++/4.6/bits/exception_defines.h \
+ /usr/include/c++/4.6/bits/cpp_type_traits.h \
+ /usr/include/c++/4.6/ext/type_traits.h \
+ /usr/include/c++/4.6/ext/numeric_traits.h \
+ /usr/include/c++/4.6/bits/stl_pair.h /usr/include/c++/4.6/bits/move.h \
+ /usr/include/c++/4.6/bits/concept_check.h \
+ /usr/include/c++/4.6/bits/stl_iterator_base_types.h \
+ /usr/include/c++/4.6/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/4.6/bits/stl_iterator.h \
+ /usr/include/c++/4.6/debug/debug.h /usr/include/c++/4.6/bits/postypes.h \
+ /usr/include/c++/4.6/cwchar /usr/include/i386-linux-gnu/bits/wchar2.h \
+ /usr/include/c++/4.6/bits/allocator.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/c++allocator.h \
+ /usr/include/c++/4.6/ext/new_allocator.h /usr/include/c++/4.6/new \
+ /usr/include/c++/4.6/exception /usr/include/c++/4.6/bits/localefwd.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/c++locale.h \
+ /usr/include/c++/4.6/clocale /usr/include/locale.h \
+ /usr/include/i386-linux-gnu/bits/locale.h /usr/include/c++/4.6/iosfwd \
+ /usr/include/c++/4.6/cctype /usr/include/ctype.h \
+ /usr/include/c++/4.6/bits/ostream_insert.h \
+ /usr/include/c++/4.6/bits/cxxabi_forced.h \
+ /usr/include/c++/4.6/bits/stl_function.h \
+ /usr/include/c++/4.6/backward/binders.h \
+ /usr/include/c++/4.6/bits/range_access.h \
+ /usr/include/c++/4.6/bits/basic_string.h \
+ /usr/include/c++/4.6/ext/atomicity.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/gthr.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/gthr-default.h \
+ /usr/include/c++/4.6/i686-linux-gnu/./bits/atomic_word.h \
+ /usr/include/c++/4.6/initializer_list \
+ /usr/include/c++/4.6/bits/basic_string.tcc /usr/include/c++/4.6/map \
+ /usr/include/c++/4.6/bits/stl_tree.h /usr/include/c++/4.6/bits/stl_map.h \
+ /usr/include/c++/4.6/bits/stl_multimap.h x11/x11_display.hpp \
+ /usr/include/X11/Xatom.h x11/../src/skin_common.hpp x11/x11_dragdrop.hpp \
+ x11/../src/generic_window.hpp x11/../src/../utils/var_bool.hpp \
+ x11/../src/../utils/variable.hpp \
+ x11/../src/../utils/../src/skin_common.hpp \
+ x11/../src/../utils/pointer.hpp x11/../src/../utils/observer.hpp \
+ /usr/include/c++/4.6/set /usr/include/c++/4.6/bits/stl_set.h \
+ /usr/include/c++/4.6/bits/stl_multiset.h x11/x11_factory.hpp \
+ x11/../src/os_factory.hpp x11/../src/../utils/position.hpp \
+ /usr/include/c++/4.6/list /usr/include/c++/4.6/bits/stl_list.h \
+ /usr/include/c++/4.6/bits/list.tcc x11/../src/../src/generic_window.hpp \
+ x11/x11_timer.hpp x11/../src/os_timer.hpp x11/../src/theme.hpp \
+ x11/../src/generic_bitmap.hpp x11/../src/../utils/pointer.hpp \
+ x11/../src/generic_font.hpp x11/../src/generic_layout.hpp \
+ x11/../src/top_window.hpp x11/../src/generic_window.hpp \
+ x11/../src/popup.hpp x11/../src/../src/window_manager.hpp \
+ x11/../src/../src/skin_common.hpp x11/../src/../src/top_window.hpp \
+ x11/../src/../src/../utils/position.hpp /usr/include/c++/4.6/utility \
+ /usr/include/c++/4.6/bits/stl_relops.h \
+ x11/../src/../commands/cmd_generic.hpp \
+ x11/../src/../commands/../src/skin_common.hpp \
+ x11/../src/../commands/../utils/pointer.hpp \
+ x11/../src/../utils/bezier.hpp /usr/include/c++/4.6/vector \
+ /usr/include/c++/4.6/bits/stl_construct.h \
+ /usr/include/c++/4.6/bits/stl_uninitialized.h \
+ /usr/include/c++/4.6/bits/stl_vector.h \
+ /usr/include/c++/4.6/bits/stl_bvector.h \
+ /usr/include/c++/4.6/bits/vector.tcc x11/../src/../utils/variable.hpp \
+ x11/../src/../controls/ctrl_generic.hpp \
+ x11/../src/../controls/../src/skin_common.hpp \
+ x11/../src/../controls/../utils/pointer.hpp \
+ x11/../src/../controls/../utils/ustring.hpp \
+ x11/../src/../controls/../utils/../src/skin_common.hpp \
+ x11/../src/../controls/../utils/pointer.hpp \
+ x11/../src/../controls/../utils/observer.hpp \
+ x11/../src/../controls/../commands/cmd_generic.hpp \
+ x11/../src/window_manager.hpp x11/../events/evt_focus.hpp \
+ x11/../events/evt_generic.hpp x11/../events/../src/skin_common.hpp \
+ x11/../events/evt_key.hpp x11/../events/evt_input.hpp \
+ x11/../events/evt_mouse.hpp x11/../events/evt_motion.hpp \
+ x11/../events/evt_leave.hpp x11/../events/evt_refresh.hpp \
+ x11/../events/evt_scroll.hpp x11/../commands/async_queue.hpp \
+ x11/../commands/cmd_generic.hpp x11/../utils/var_bool.hpp \
+ ../../../include/vlc_keys.h
+
+/usr/include/X11/keysym.h:
+
+/usr/include/X11/keysymdef.h:
+
+x11/x11_loop.hpp:
+
+/usr/include/X11/Xlib.h:
+
+/usr/include/i386-linux-gnu/sys/types.h:
+
+/usr/include/features.h:
+
+/usr/include/i386-linux-gnu/bits/predefs.h:
+
+/usr/include/i386-linux-gnu/sys/cdefs.h:
+
+/usr/include/i386-linux-gnu/bits/wordsize.h:
+
+/usr/include/i386-linux-gnu/gnu/stubs.h:
+
+/usr/include/i386-linux-gnu/gnu/stubs-32.h:
+
+/usr/include/i386-linux-gnu/bits/types.h:
+
+/usr/include/i386-linux-gnu/bits/typesizes.h:
+
+/usr/include/time.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stddef.h:
+
+/usr/include/endian.h:
+
+/usr/include/i386-linux-gnu/bits/endian.h:
+
+/usr/include/i386-linux-gnu/bits/byteswap.h:
+
+/usr/include/i386-linux-gnu/sys/select.h:
+
+/usr/include/i386-linux-gnu/bits/select.h:
+
+/usr/include/i386-linux-gnu/bits/sigset.h:
+
+/usr/include/i386-linux-gnu/bits/time.h:
+
+/usr/include/i386-linux-gnu/bits/select2.h:
+
+/usr/include/i386-linux-gnu/sys/sysmacros.h:
+
+/usr/include/i386-linux-gnu/bits/pthreadtypes.h:
+
+/usr/include/X11/X.h:
+
+/usr/include/X11/Xfuncproto.h:
+
+/usr/include/X11/Xosdefs.h:
+
+x11/../src/os_loop.hpp:
+
+x11/../src/skin_common.hpp:
+
+../../../config.h:
+
+../../../include/vlc_fixups.h:
+
+../../../include/vlc_common.h:
+
+../../../include/vlc_config.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/i386-linux-gnu/bits/waitflags.h:
+
+/usr/include/i386-linux-gnu/bits/waitstatus.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/alloca.h:
+
+/usr/include/i386-linux-gnu/bits/stdlib.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stdarg.h:
+
+/usr/include/string.h:
+
+/usr/include/i386-linux-gnu/bits/string3.h:
+
+/usr/include/stdio.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/include/i386-linux-gnu/bits/stdio_lim.h:
+
+/usr/include/i386-linux-gnu/bits/sys_errlist.h:
+
+/usr/include/i386-linux-gnu/bits/stdio.h:
+
+/usr/include/i386-linux-gnu/bits/stdio2.h:
+
+/usr/include/inttypes.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/i386-linux-gnu/bits/wchar.h:
+
+../../../include/vlc_mtime.h:
+
+../../../include/vlc_threads.h:
+
+/usr/include/unistd.h:
+
+/usr/include/i386-linux-gnu/bits/posix_opt.h:
+
+/usr/include/i386-linux-gnu/bits/environments.h:
+
+/usr/include/i386-linux-gnu/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/include/i386-linux-gnu/bits/unistd.h:
+
+/usr/include/pthread.h:
+
+/usr/include/sched.h:
+
+/usr/include/i386-linux-gnu/bits/sched.h:
+
+/usr/include/i386-linux-gnu/bits/timex.h:
+
+/usr/include/i386-linux-gnu/bits/setjmp.h:
+
+/usr/include/semaphore.h:
+
+/usr/include/i386-linux-gnu/bits/semaphore.h:
+
+../../../include/vlc_arrays.h:
+
+../../../include/vlc_messages.h:
+
+../../../include/vlc_objects.h:
+
+../../../include/vlc_variables.h:
+
+../../../include/vlc_main.h:
+
+../../../include/vlc_configuration.h:
+
+../../../include/vlc_interface.h:
+
+../../../include/vlc_charset.h:
+
+../../../include/vlc_fs.h:
+
+/usr/include/dirent.h:
+
+/usr/include/i386-linux-gnu/bits/dirent.h:
+
+/usr/include/i386-linux-gnu/bits/posix1_lim.h:
+
+/usr/include/i386-linux-gnu/bits/local_lim.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/c++/4.6/string:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/c++config.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/os_defines.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/cpu_defines.h:
+
+/usr/include/c++/4.6/bits/stringfwd.h:
+
+/usr/include/c++/4.6/bits/char_traits.h:
+
+/usr/include/c++/4.6/bits/stl_algobase.h:
+
+/usr/include/c++/4.6/bits/functexcept.h:
+
+/usr/include/c++/4.6/bits/exception_defines.h:
+
+/usr/include/c++/4.6/bits/cpp_type_traits.h:
+
+/usr/include/c++/4.6/ext/type_traits.h:
+
+/usr/include/c++/4.6/ext/numeric_traits.h:
+
+/usr/include/c++/4.6/bits/stl_pair.h:
+
+/usr/include/c++/4.6/bits/move.h:
+
+/usr/include/c++/4.6/bits/concept_check.h:
+
+/usr/include/c++/4.6/bits/stl_iterator_base_types.h:
+
+/usr/include/c++/4.6/bits/stl_iterator_base_funcs.h:
+
+/usr/include/c++/4.6/bits/stl_iterator.h:
+
+/usr/include/c++/4.6/debug/debug.h:
+
+/usr/include/c++/4.6/bits/postypes.h:
+
+/usr/include/c++/4.6/cwchar:
+
+/usr/include/i386-linux-gnu/bits/wchar2.h:
+
+/usr/include/c++/4.6/bits/allocator.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/c++allocator.h:
+
+/usr/include/c++/4.6/ext/new_allocator.h:
+
+/usr/include/c++/4.6/new:
+
+/usr/include/c++/4.6/exception:
+
+/usr/include/c++/4.6/bits/localefwd.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/c++locale.h:
+
+/usr/include/c++/4.6/clocale:
+
+/usr/include/locale.h:
+
+/usr/include/i386-linux-gnu/bits/locale.h:
+
+/usr/include/c++/4.6/iosfwd:
+
+/usr/include/c++/4.6/cctype:
+
+/usr/include/ctype.h:
+
+/usr/include/c++/4.6/bits/ostream_insert.h:
+
+/usr/include/c++/4.6/bits/cxxabi_forced.h:
+
+/usr/include/c++/4.6/bits/stl_function.h:
+
+/usr/include/c++/4.6/backward/binders.h:
+
+/usr/include/c++/4.6/bits/range_access.h:
+
+/usr/include/c++/4.6/bits/basic_string.h:
+
+/usr/include/c++/4.6/ext/atomicity.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/gthr.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/gthr-default.h:
+
+/usr/include/c++/4.6/i686-linux-gnu/./bits/atomic_word.h:
+
+/usr/include/c++/4.6/initializer_list:
+
+/usr/include/c++/4.6/bits/basic_string.tcc:
+
+/usr/include/c++/4.6/map:
+
+/usr/include/c++/4.6/bits/stl_tree.h:
+
+/usr/include/c++/4.6/bits/stl_map.h:
+
+/usr/include/c++/4.6/bits/stl_multimap.h:
+
+x11/x11_display.hpp:
+
+/usr/include/X11/Xatom.h:
+
+x11/../src/skin_common.hpp:
+
+x11/x11_dragdrop.hpp:
+
+x11/../src/generic_window.hpp:
+
+x11/../src/../utils/var_bool.hpp:
+
+x11/../src/../utils/variable.hpp:
+
+x11/../src/../utils/../src/skin_common.hpp:
+
+x11/../src/../utils/pointer.hpp:
+
+x11/../src/../utils/observer.hpp:
+
+/usr/include/c++/4.6/set:
+
+/usr/include/c++/4.6/bits/stl_set.h:
+
+/usr/include/c++/4.6/bits/stl_multiset.h:
+
+x11/x11_factory.hpp:
+
+x11/../src/os_factory.hpp:
+
+x11/../src/../utils/position.hpp:
+
+/usr/include/c++/4.6/list:
+
+/usr/include/c++/4.6/bits/stl_list.h:
+
+/usr/include/c++/4.6/bits/list.tcc:
+
+x11/../src/../src/generic_window.hpp:
+
+x11/x11_timer.hpp:
+
+x11/../src/os_timer.hpp:
+
+x11/../src/theme.hpp:
+
+x11/../src/generic_bitmap.hpp:
+
+x11/../src/../utils/pointer.hpp:
+
+x11/../src/generic_font.hpp:
+
+x11/../src/generic_layout.hpp:
+
+x11/../src/top_window.hpp:
+
+x11/../src/generic_window.hpp:
+
+x11/../src/popup.hpp:
+
+x11/../src/../src/window_manager.hpp:
+
+x11/../src/../src/skin_common.hpp:
+
+x11/../src/../src/top_window.hpp:
+
+x11/../src/../src/../utils/position.hpp:
+
+/usr/include/c++/4.6/utility:
+
+/usr/include/c++/4.6/bits/stl_relops.h:
+
+x11/../src/../commands/cmd_generic.hpp:
+
+x11/../src/../commands/../src/skin_common.hpp:
+
+x11/../src/../commands/../utils/pointer.hpp:
+
+x11/../src/../utils/bezier.hpp:
+
+/usr/include/c++/4.6/vector:
+
+/usr/include/c++/4.6/bits/stl_construct.h:
+
+/usr/include/c++/4.6/bits/stl_uninitialized.h:
+
+/usr/include/c++/4.6/bits/stl_vector.h:
+
+/usr/include/c++/4.6/bits/stl_bvector.h:
+
+/usr/include/c++/4.6/bits/vector.tcc:
+
+x11/../src/../utils/variable.hpp:
+
+x11/../src/../controls/ctrl_generic.hpp:
+
+x11/../src/../controls/../src/skin_common.hpp:
+
+x11/../src/../controls/../utils/pointer.hpp:
+
+x11/../src/../controls/../utils/ustring.hpp:
+
+x11/../src/../controls/../utils/../src/skin_common.hpp:
+
+x11/../src/../controls/../utils/pointer.hpp:
+
+x11/../src/../controls/../utils/observer.hpp:
+
+x11/../src/../controls/../commands/cmd_generic.hpp:
+
+x11/../src/window_manager.hpp:
+
+x11/../events/evt_focus.hpp:
+
+x11/../events/evt_generic.hpp:
+
+x11/../events/../src/skin_common.hpp:
+
+x11/../events/evt_key.hpp:
+
+x11/../events/evt_input.hpp:
+
+x11/../events/evt_mouse.hpp:
+
+x11/../events/evt_motion.hpp:
+
+x11/../events/evt_leave.hpp:
+
+x11/../events/evt_refresh.hpp:
+
+x11/../events/evt_scroll.hpp:
+
+x11/../commands/async_queue.hpp:
+
+x11/../commands/cmd_generic.hpp:
+
+x11/../utils/var_bool.hpp:
+
+../../../include/vlc_keys.h:

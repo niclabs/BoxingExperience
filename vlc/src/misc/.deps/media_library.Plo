@@ -1,0 +1,8 @@
+misc/media_library.lo: misc/media_library.c ../config.h \
+ ../include/vlc_fixups.h /usr/lib/gcc/i686-linux-gnu/4.6/include/stddef.h
+
+../config.h:
+
+../include/vlc_fixups.h:
+
+/usr/lib/gcc/i686-linux-gnu/4.6/include/stddef.h:
