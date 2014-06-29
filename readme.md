@@ -27,11 +27,14 @@ on the ns-3 folder. This step IS required for ns-3 to work correctly.
 
 - Move "CameraStreaming.cc" into "ns-3.19/scratch" folder.
 
-- Create the containers using the included create_containers script
+- Add the video you want to stream in the "vlc" folder, and change the video name
+in start_basic_test script (line 60).
 
-- Once the containers are created, run the tests using start_simple_test script.
+- Create the containers using the included create_containers script.
 
-- Once the required tests are done, run stop_simple_test script to stop the
+- Once the containers are created, run the tests using start_basic_test script.
+
+- Once the required tests are done, run stop_basic_test script to stop the
 ns-3 topology simulation and the containers linked to it.
 
 - Finally, to destroy some existing containers, use destroy_containers script.
