@@ -1,0 +1,80 @@
+#!/bin/bash
+NARGS=$#
+SERVER_RUNTIME=500.0
+SIM_RUNTIME=550.0
+CLIENT_RUNTIME=40.0
+N_TESTS=3
+LXC_PATH=/var/lib/lxc
+TEST_PATH=/home/jcarrera/test_funciona
+CLIENT_PATH=/var/lib/lxc/slow-client-x/rootfs/
+INTEGER='^[0-9]+$'
+
+start_sc_test()
+{
+
+	# Make script for server
+	cat >$LXC_PATH/server/rootfs/server_script <<'EOF'
+#!/bin/bash
+VLC_PATH=/home/jcarrera/Documents/vlc
+export DISPLAY=
+EOF
+	
+	chmod +x $LXC_PATH/server/rootfs/server_script
+
+	# Make script for slow-client
+		cat >$LXC_PATH/slow-client-x/rootfs/client_script <<'EOF'
+#!/bin/bash
+VLC_PATH=/home/jcarrera/Documents/vlc
+export DISPLAY=
+EOF
+		
+		chmod +x $LXC_PATH/slow-client-x/rootfs/client_script
+
+	# Populate server_script file
+	# Configure default gateway
+	echo "route add default gw 10.100.2.1 dev eth0" >> $LXC_PATH/server/rootfs/server_script
+	echo 'sudo -u ubuntu $VLC_PATH/vlc -vvv $VLC_PATH/big_buck_bunny_480p_surround-fix.avi --run-time='"${SERVER_RUNTIME}"' --sout "#transcode{vcodec=mjpg,venc=ffmpeg{qmin=10,qmax=10}}:standard{access=http{use-algorithms,allocation=MAX,replacement=NF,frame-buffers=10},mux=mpjpeg,dst=@:8080}"' >> $LXC_PATH/server/rootfs/server_script
+
+	# Populate client_script file
+	echo "route add default gw 10.100.3.1 dev eth0" >> $LXC_PATH/slow-client-x/rootfs/client_script
+	echo 'su - ubuntu -c "$VLC_PATH/vlc "--avcodec-error-resilience=3" --run-time='"${CLIENT_RUNTIME}"' http://10.100.2.2:8080 vlc://quit" 2> fpsrate.txt' >> $LXC_PATH/slow-client-x/rootfs/client_script
+	echo "sleep 3" >> $LXC_PATH/slow-client-x/rootfs/client_script
+
+	# Open ns-3 and start topology
+	cd ns-3.19
+	./waf build
+	./waf --run "scratch/NewTopology --duration=${SIM_RUNTIME} --verbose=false" & # --datarate01=100Mbps --datarate02=100Mbps --datarate13=100Mbps --appDataRate=100Kbps" &
+	cd -
+	sleep 5
+
+	# Start server script
+	xterm -e lxc-start -n server ./server_script -c /dev/null &
+	sleep 3
+
+	for (( i=1; i <= $N_TESTS; i=i+1 ))
+	do
+
+		# Run i-th test
+		xterm -e lxc-start -n slow-client-x ./client_script -c /dev/null &
+		sleep 50 # sleep <client_runtime>
+		echo "client ${i} is dead"
+
+		AUXSTR=$(grep '^average FPS:  ' $CLIENT_PATH/fpsrate.txt)
+		echo "${i} ${AUXSTR/'average FPS:  '/}" >> $TEST_PATH/variable_traffic.txt
+
+	done
+
+
+
+
+
+	# Start client script
+#	sleep 1
+#	xterm -e lxc-start -n slow-client-x ./client_script -c /dev/null &
+#	sleep 45
+#	xterm -e lxc-start -n slow-client-x ./client_script -c /dev/null &
+
+}
+	
+start_sc_test
+

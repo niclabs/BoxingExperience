@@ -1,0 +1,15 @@
+VIDNAME="big_buck_bunny_480p_surround-fix.avi"
+VCODEC="mjpg"
+QMIN=10
+QMAX=10
+MUX="mpjpeg"
+RepAlg=NF
+AllocAlg=NF
+nbuffers=8
+VERB="false"
+TOPOLOGY="NewTopology"
+DR02=100Mbps 
+DR01=100Mbps 
+DR13=100Mbps 
+DR05=100Mbps 
+DR14=100Mbps

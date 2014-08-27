@@ -1,0 +1,61 @@
+**TEST 1: Clients-server topology in ns-3 for testing vlc video streaming**
+
+**Description**
+This test consists of the simulation of a video streaming service with increasing number of slow clients over ns-3.
+The aim of this test is twofold:
+1. Measuring how the number of slow clients affects the QoS/QoE of the fastest client.
+2. Evaluating how the algorithms proposed in [1] manage the requirements of the clients. 
+
+*Note:* The streaming tool used here is the modified version of VLC developed in [2], that implements the algorithms proposed in [1].
+
+An ASCII representation of the simulated topology is presented as follows:
+
+	  						_ _ _ _ fc-1
+               /_ _ _ _ ...
+              /_ _ _ _  fc-nf
+             /
+   s0 ----- r0 -------  sc-1
+						 \ _ _ _ _  ...
+              \ _ _ _ _ ...
+               \_ _ _ _ sc-ns
+
+Where s0 is the server, r0 a router, fc the fast clients and sc the slow clients. The bandwidth of each router-client link depends on the client, following the pattern presented in [3].
+
+**Files**
+This folder contains the following files:
+1. create_containers
+2. destroy_containers
+3. run_simulation
+4. run_test_1
+5. CameraStreaming.cc
+6. makeconf.c
+7. encoding_params.cfg
+
+**Instructions**
+1. Copy "CameraStreaming.cc" to "ns-3.19/scratch" folder. This code implements the ns-3 topology presented above.
+
+2. Add the video you want to stream in the "vlc" folder, and change the video name in encoding_params.cfg (VIDNAME variable).
+
+3. Create and configure the linux containers using the included create_containers script.
+
+	 Usage: 	$ ./create_containers <initialFastClientIndex> <finalFastClientIndex> <initialSlowClientIndex> <finalSlowClientIndex>
+
+	 Example:	To create 2 fast clients (indexes 0, 1)  and 20 slow clients (indexes 0, 1, ..., 19), execute: $ ./create_containers 0 2 0 20 
+						In order to add 22 slow clients, execute: $ ./create_containers 0 0 20 42 creates 
+
+4. Once the containers are created, two scripts can be executed:
+
+- run_simulation: an individual realization of a test.
+	Usage: $ ./run_simulation <numberOfFastClients> <numberOfSlowClients> <replacementAlg> <allocationAlg> <nBuffers> <runtime(seconds)>
+	In this test a server transmits the video specified in encoding_params.cfg over a the ns-3 simulated network. Each
+
+- run_test_1: a complete realization of the test introduced in **Description** 
+	Usage: $ ./run_test_1 <InitialNumberOfSlowClients> <FinalNumberOfSlowClients> <Step>
+
+5. Finally, if you need to destroy some existing containers, use destroy_containers script. 
+	 Usage: 	$ ./destroy_containers <initialFastClientIndex> <finalFastClientIndex> <initialSlowClientIndex> <finalSlowClientIndex>
+
+**References**
+[1] Piquer, J. E., & Bustos-Jiménez, J. (2010). Frame Allocation Algorithms for Multi-threaded Network Cameras. Euro-Par 2010-Parallel Processing, 560-571.
+[2] Ferrer, G. M., Méric, H., Piquer, J. M., & Bustos-Jiménez, J. Performance evaluation of streaming algorithms for network cameras.
+[3] Bustos-Jiménez, J., Alonso, R., Faúndez, C., & Méric, H. BoxingExperience: Measuring QoS and QoE of Multimedia Streaming Using NS3, LXC and VLC.

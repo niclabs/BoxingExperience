@@ -108,7 +108,8 @@ main (int argc, char *argv[])
 	// This will stop ns-3 if it can't keep up with the traffic to simulate.
 	Config::SetDefault ("ns3::RealtimeSimulatorImpl::SynchronizationMode", StringValue("HardLimit"));
 	// Default time difference is 100 ms
-	Config::SetDefault ("ns3::RealtimeSimulatorImpl::HardLimit", TimeValue(Time("20ms")));
+	// Config::SetDefault ("ns3::RealtimeSimulatorImpl::HardLimit", TimeValue(Time("20ms")));
+	Config::SetDefault ("ns3::RealtimeSimulatorImpl::HardLimit", TimeValue(Time("100ms")));
 
   NodeContainer router;
   NodeContainer buffer; //Ghost node
@@ -205,7 +206,7 @@ main (int argc, char *argv[])
     addressHlpr.Assign(deviceContainer.Get (2*(nfClients+i+1)));
   }
 
-	//Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+	Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
 	//csma.EnablePcap ("RouterTrace", deviceContainer.Get (0), false);
 
@@ -215,6 +216,8 @@ main (int argc, char *argv[])
 
 	if (stop != -1.0)
   	Simulator::Stop (Seconds (stop));
+	NS_LOG_UNCOND ("Simulation starts");
   Simulator::Run ();
   Simulator::Destroy ();
+  NS_LOG_UNCOND ("Simulation finished");
 }

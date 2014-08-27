@@ -1,0 +1,59 @@
+#!/bin/bash
+# USER PARAMS
+MIN_SC=$1
+MAX_SC=$2
+STEP=$3
+# SCRIPT FIXED PARAMS
+NF=2
+RUNTIME=240
+BUFFER_PATH=/var/lib/lxc/buffer/rootfs
+EXPERIMENT_DATE=$(date +%Y-%m-%d_%H:%M:%S)
+OUTPUT_DIRECTORY="Results $(date +%Y-%m-%d_%H:%M:%S)"
+OUTPUT_FILE_TAG="SimulationOutput"
+INFO_FILE_TAG="SimulationInfo"
+mkdir $OUTPUT_DIRECTORY
+chmod 777 $OUTPUT_DIRECTORY
+# Warning: You must run this script in root mode
+
+function subtest {
+REP=$1
+ALLOC=$2
+NBUFF=$3
+INFO_FILE=$INFO_FILE_TAG-$REP-$ALLOC-$NBUFF.txt
+OUTPUT_FILE=$OUTPUT_FILE_TAG-$REP-$ALLOC-$NBUFF.txt
+echo Date: $EXPERIMENT_DATE >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo Replacement Algorithm: $REP >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo Allocation Algorithm: $ALLOC >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo Number of buffers: $NBUFF >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo Runtime [seconds]: $RUNTIME >> $OUTPUT_DIRECTORY/$INFO_FILE
+source encoding_params.cfg
+echo Topology: $TOPOLOGY >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo Video Name: $VIDNAME >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo Encoding parameters: >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo 1. vcodec: $VCODEC >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo 2. mux: $MUX >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo 3. qmin: $QMIN >> $OUTPUT_DIRECTORY/$INFO_FILE
+echo 4. qmax: $QMAX >> $OUTPUT_DIRECTORY/$INFO_FILE
+
+
+for (( i=$MIN_SC; i <= $MAX_SC; i=i+$STEP ))
+do
+
+	# STEP 1:	Run simulation w/ 2 fast clients and i slow clients
+	echo "Running: ./run_simulation $NF $i $REP $ALLOC $NBUFF $RUNTIME"
+	./run_simulation $NF $i $REP $ALLOC $NBUFF $RUNTIME
+
+	# STEP 2: Add fastest client statistics to log file
+	LOG_NAME="test-$NF-$i-$REP-$ALLOC-$NBUFF.txt"	
+	AUXSTR=$(grep '^1   ' $BUFFER_PATH/$LOG_NAME)
+	#rm $LOG_NAME
+	echo "${i} "${AUXSTR/'1 '/""} >> $OUTPUT_DIRECTORY/$OUTPUT_FILE
+
+done
+
+}
+
+subtest NF NF 8
+subtest NF OF 8
+subtest NF NF 6
+subtest NF OF 6

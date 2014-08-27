@@ -1,0 +1,101 @@
+#!/bin/bash
+MIN_SC=$1
+MAX_SC=$2
+STEP=$3
+TEST_PATH=/home/jcarrera/BoxingExperience/test_1
+BUFFER_PATH=/var/lib/lxc/buffer/rootfs/
+#BUFFER_PATH=/home/jcarrera/Desktop/stats
+
+# Warning: You must run this script in root mode
+
+#for (( i=$MIN_SC; i <= $MAX_SC; i=i+$STEP ))
+#do
+	#	Run simulation w/ 2 fast clients and i slow clients
+	#$TEST_PATH/start_basic_test_r 2 $i
+#	sleep 620
+
+	#$TEST_PATH/stop_basic_test 2 $i
+	
+	# TODO: Add the following information to log file:
+	# 1. BufferSize
+	# 2. Allocation algorithm
+	# 3. Replacement algorithm
+
+	# Save statistics of the test w/ i slow clients (> $TEST_PATH/test-${i}-sc.txt)
+	# ... not necessary (./start_basic_test writes the required file)
+
+	# Add fastest client statistics to log file (>> $TEST_PATH/logfile.txt)
+#	AUXSTR=$(grep '^1   ' $BUFFER_PATH/test-${i}-sc.txt)
+	#echo "${i} "${AUXSTR/'1 '/""} >> $TEST_PATH/logfile_r.txt
+
+#done
+
+for (( i=$MIN_SC; i <= $MAX_SC; i=i+$STEP ))
+do
+	#	Run simulation w/ 2 fast clients and i slow clients
+	$TEST_PATH/start_basic_test_rr 2 $i
+	sleep 620
+
+	$TEST_PATH/stop_basic_test 2 $i
+	
+	# TODO: Add the following information to log file:
+	# 1. BufferSize
+	# 2. Allocation algorithm
+	# 3. Replacement algorithm
+
+	# Save statistics of the test w/ i slow clients (> $TEST_PATH/test-${i}-sc.txt)
+	# ... not necessary (./start_basic_test writes the required file)
+
+	# Add fastest client statistics to log file (>> $TEST_PATH/logfile.txt)
+	AUXSTR=$(grep '^1   ' $BUFFER_PATH/test-${i}-sc.txt)
+	echo "${i} "${AUXSTR/'1 '/""} >> $TEST_PATH/logfile_rr.txt
+
+done
+
+for (( i=$MIN_SC; i <= $MAX_SC; i=i+$STEP ))
+do
+	#	Run simulation w/ 2 fast clients and i slow clients
+	$TEST_PATH/start_basic_test_rrr 2 $i
+	sleep 620
+
+	$TEST_PATH/stop_basic_test 2 $i
+	
+	# TODO: Add the following information to log file:
+	# 1. BufferSize
+	# 2. Allocation algorithm
+	# 3. Replacement algorithm
+
+	# Save statistics of the test w/ i slow clients (> $TEST_PATH/test-${i}-sc.txt)
+	# ... not necessary (./start_basic_test writes the required file)
+
+	# Add fastest client statistics to log file (>> $TEST_PATH/logfile.txt)
+	AUXSTR=$(grep '^1   ' $BUFFER_PATH/test-${i}-sc.txt)
+	echo "${i} "${AUXSTR/'1 '/""} >> $TEST_PATH/logfile_rrr.txt
+
+done
+
+for (( i=$MIN_SC; i <= $MAX_SC; i=i+$STEP ))
+do
+	#	Run simulation w/ 2 fast clients and i slow clients
+	$TEST_PATH/start_basic_test_rrrr 2 $i
+	sleep 620
+
+	$TEST_PATH/stop_basic_test 2 $i
+	
+	# TODO: Add the following information to log file:
+	# 1. BufferSize
+	# 2. Allocation algorithm
+	# 3. Replacement algorithm
+
+	# Save statistics of the test w/ i slow clients (> $TEST_PATH/test-${i}-sc.txt)
+	# ... not necessary (./start_basic_test writes the required file)
+
+	# Add fastest client statistics to log file (>> $TEST_PATH/logfile.txt)
+	AUXSTR=$(grep '^1   ' $BUFFER_PATH/test-${i}-sc.txt)
+	echo "${i} "${AUXSTR/'1 '/""} >> $TEST_PATH/logfile_rrrr.txt
+
+done
+
+
+
+

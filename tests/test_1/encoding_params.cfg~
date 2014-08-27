@@ -1,0 +1,5 @@
+VIDNAME="big_buck_bunny_480p_surround-fix.avi"
+VCODEC="mjpg"
+QMIN=10
+QMAX=10
+MUX="mpjpeg"

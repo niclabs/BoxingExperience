@@ -1,0 +1,58 @@
+#!/bin/bash
+NARGS=$#
+SERV=true
+BF=$1
+EF=$2
+BS=$3
+ES=$4
+LXC_PATH=/var/lib/lxc
+VLC_PATH=/home/jcarrera/Documents/vlc
+INTEGER='^[0-9]+$'
+
+create_containers_2()
+{
+	# Create configuration files
+	mkdir lxc_conf
+	cc make_sc_conf.c -o make_sc_conf
+	./make_sc_conf
+
+	# Create and start bridges/taps
+
+	# SERVER
+	if [ "$SERV" == true ] ; then
+		brctl addbr br-server
+		tunctl -t tap-server
+		ifconfig tap-server 0.0.0.0 promisc up
+		brctl addif br-server tap-server
+		ifconfig br-server up
+	fi
+
+	# SLOW CLIENT
+	brctl addbr br-x-c
+	tunctl -t tap-scx
+	ifconfig tap-scx 0.0.0.0 promisc up
+	brctl addif br-x-c tap-scx
+	ifconfig br-x-c up
+
+	
+	# Show existing bridges
+	brctl show &&
+
+	# Create containers
+	if [ "$SERV" == true ] ; then
+		lxc-create -n server -f ./lxc_conf/lxc-server.conf -t ubuntu
+	fi
+
+	lxc-create -n client-x -f ./lxc_conf/lxc-client-x.conf -t ubuntu
+
+	# Create mount point directories
+	if [ "$SERV" == true ] ; then
+		mkdir -p $LXC_PATH/server/rootfs/$VLC_PATH
+	fi
+
+	mkdir -p $LXC_PATH/client-x/rootfs/$VLC_PATH
+
+}
+
+create_containers_2
+

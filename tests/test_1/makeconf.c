@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 	
 	char cwd[256];
   getcwd(cwd, 255);
-	strcat(cwd, "/vlc");
+	strcat(cwd, "/../vlc");
 	
 	nf = atoi (argv[1]);
 	ns = atoi (argv[2]);

@@ -1,18 +1,35 @@
 #!/bin/bash
-NARGS=$#
+
+# USER PARAMETERS
 NF=$1
 NS=$2
+RepAlg=$3
+AllocAlg=$4
+nbuffers=$5
+time_out=$6
+
+# ENCODING PARAMETERS
+source encoding_params.cfg
+
+# PROGRAM PARAMETERS
+delta_T=10
+time_out_2=$(($time_out+$delta_T))
+NARGS=$#
 LXC_PATH=/var/lib/lxc
 INTEGER='^[0-9]+$'
+LOG_NAME="test-${NF}-${NS}-${RepAlg}-${AllocAlg}-${nbuffers}.txt"
 
+# AUXILIARY FUNCTION
 start_basic_test()
 {
+
 	if [ "$UID" -ne 0 ]; then
 	echo "This script should be run as 'root'"; return 1
 	fi
 
-	if [[ $NARGS -ne 2 ]]; then
-	echo "usage: $0 <N_FAST_CLIENTS> <N_SLOW_CLIENTS>"
+	if [[ $NARGS -ne 6 ]]; then
+	echo "usage: $0 <N_FAST_CLIENTS> <N_SLOW_CLIENTS> <REPLACEMENT_ALG> <ALLOCATION_ALG> <N_BUFFERS> <RUNTIME(seconds)>"
+	#run_simulation 1 1 NF NF 8 300
 	return 1
 	fi
 
@@ -24,15 +41,24 @@ start_basic_test()
    	echo "error: Number of slow clients must be a number" >&2; return 1
 	fi
 
-	# Make script for clients and server
+	if ! [[ $nbuffers =~ $INTEGER ]]; then
+   	echo "error: Number of buffers must be a number" >&2; return 1
+	fi
+
+	if ! [[ $time_out =~ $INTEGER ]]; then
+   	echo "error: Runtime must be a number" >&2; return 1
+	fi
+
+
+# Create script for server
 	cat >$LXC_PATH/buffer/rootfs/server_script <<'EOF'
 #!/bin/bash
 VLC_PATH=/home/jcarrera/Documents/vlc
 export DISPLAY=
 EOF
-	
 	chmod +x $LXC_PATH/buffer/rootfs/server_script
 
+# Create scripts for fast clients
 	for (( i=0; i < $NF; i++ ))
 	do
 		cat >$LXC_PATH/fast-client-${i}/rootfs/client_script <<'EOF'
@@ -40,10 +66,11 @@ EOF
 VLC_PATH=/home/jcarrera/Documents/vlc
 export DISPLAY=
 EOF
-		
 		chmod +x $LXC_PATH/fast-client-${i}/rootfs/client_script
+
 	done
 
+# Create scripts for slow clients
 	for (( i=0; i < $NS; i++ ))
 	do
 		cat >$LXC_PATH/slow-client-${i}/rootfs/client_script <<'EOF'
@@ -51,51 +78,57 @@ EOF
 VLC_PATH=/home/jcarrera/Documents/vlc
 export DISPLAY=
 EOF
-		
 		chmod +x $LXC_PATH/slow-client-${i}/rootfs/client_script
 	done
-
-	# Configure default gateway
+ 
+	# Populate server script
 	echo "route add default gw 10.10.0.1 dev eth0" >> $LXC_PATH/buffer/rootfs/server_script
-	echo 'sudo -u ubuntu $VLC_PATH/vlc -vvv $VLC_PATH/big_buck_bunny_480p_surround-fix.avi --sout "#transcode{vcodec=mjpg,venc=ffmpeg{qmin=10,qmax=10}}:standard{access=http{use-algorithms,allocation=MAX,replacement=NF,frame-buffers=10},mux=mpjpeg,dst=@:8080}"' >> $LXC_PATH/buffer/rootfs/server_script
+	echo 'sudo -u ubuntu timeout '$time_out' $VLC_PATH/vlc -vvv $VLC_PATH/'$VIDNAME' --sout "#transcode{vcodec='$VCODEC',venc=ffmpeg{qmin='$QMIN',qmax='$QMAX'}}:standard{access=http{use-algorithms,allocation='$AllocAlg',replacement='$RepAlg',frame-buffers='$nbuffers'},mux='$MUX',dst=@:8080}" > '"${LOG_NAME}" >> $LXC_PATH/buffer/rootfs/server_script
+	echo "sleep 5" >> $LXC_PATH/buffer/rootfs/server_script
 
+	# Populate fast clients scripts
 	for (( i=0; i < $NF; i++ ))
 	do
 		echo "route add default gw 10.$(($i / 256 + 20)).$(($i % 256)).1 dev eth0" >> $LXC_PATH/fast-client-${i}/rootfs/client_script
-		echo 'su - ubuntu -c "$VLC_PATH/vlc "--avcodec-error-resilience=3" --no-video http://10.10.0.2:8080"' >> $LXC_PATH/fast-client-${i}/rootfs/client_script
+		echo 'su - ubuntu -c "$VLC_PATH/vlc "--avcodec-error-resilience=3" --no-video http://10.10.0.2:8080 vlc://quit"' >> $LXC_PATH/fast-client-${i}/rootfs/client_script
 		echo "sleep 3" >> $LXC_PATH/fast-client-${i}/rootfs/client_script
-	done
+	done	
 
+	# Populate slow clients scripts
 	for (( i=0; i < $NS; i++ ))
 	do
 		echo "route add default gw 10.$(($i / 256 + 30)).$(($i % 256)).1 dev eth0" >> $LXC_PATH/slow-client-${i}/rootfs/client_script
-		echo 'su - ubuntu -c "$VLC_PATH/vlc "--avcodec-error-resilience=3" --no-video http://10.10.0.2:8080"' >> $LXC_PATH/slow-client-${i}/rootfs/client_script
+		echo 'su - ubuntu -c "$VLC_PATH/vlc "--avcodec-error-resilience=3" --no-video http://10.10.0.2:8080 vlc://quit"' >> $LXC_PATH/slow-client-${i}/rootfs/client_script
 		echo "sleep 3" >> $LXC_PATH/slow-client-${i}/rootfs/client_script
 	done
 
 	# Open ns-3 and start topology
-	cd ns-3.19
+	cd ../ns-3.19
 	./waf build
-	./waf --run "scratch/CameraStreaming --nsClients=$NS --nfClients=$NF --duration=3600" &
+	./waf --run "scratch/$TOPOLOGY --nsClients=$NS --nfClients=$NF --duration=$time_out_2" &
+	cd - > /dev/null
 	sleep 5
 
-	# Start server and clients script
+	# Start server script in Linux container
 	xterm -e lxc-start -n buffer ./server_script -c /dev/null &
 	sleep 3
 
+	# Start fast clients script in Linux container
 	for (( i=0; i < $NF; i++ ))
 	do
 		sleep 1
 		xterm -e lxc-start -n fast-client-${i} ./client_script -c /dev/null &
 	done
 
+	# Start slow clients script in Linux container
 	for (( i=0; i < $NS; i++ ))
 	do
 		sleep 1
 		xterm -e lxc-start -n slow-client-${i} ./client_script -c /dev/null &
 	done
 
+wait
+
 }
-
+	
 start_basic_test
-

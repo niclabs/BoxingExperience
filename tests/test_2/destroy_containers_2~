@@ -1,0 +1,58 @@
+#!/bin/bash
+NARGS=$#
+BUF=true
+INTEGER='^[0-9]+$'
+
+destroy_containers_2()
+{
+	# Stop containers and ns-3 (taps can't be destroyed while ns-3 is using them)
+	#./stop_sc_test.sh
+
+	# Destroy containers
+	if [ "$BUF" == true ] ; then
+		lxc-destroy -n server
+	fi
+
+	lxc-destroy -n client-x
+
+	# Take bridges down
+
+	ifconfig br-x-c down
+
+	if [ "$BUF" == true ] ; then
+		ifconfig br-server down
+	fi
+
+	# Remove taps from the bridges
+
+	brctl delif br-x-c tap-cx
+
+	if [ "$BUF" == true ] ; then
+		brctl delif br-server tap-server
+	fi
+
+	# Bring down the taps
+
+	ifconfig tap-cx down
+
+	if [ "$BUF" == true ] ; then
+		ifconfig tap-server down
+	fi
+
+	# Delete the taps
+	tunctl -d tap-cx
+
+	if [ "$BUF" == true ] ; then
+		tunctl -d tap-server
+	fi
+
+	# Destroy the bridges
+	brctl delbr br-x-c
+
+	if [ "$BUF" == true ] ; then
+		brctl delbr br-server
+	fi
+}
+
+destroy_containers_2
+

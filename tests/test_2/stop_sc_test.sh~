@@ -1,0 +1,25 @@
+#!/bin/bash
+NARGS=$#
+SERV=true
+EF=$1
+ES=$2
+INTEGER='^[0-9]+$'
+
+stop_sc_test()
+{
+		# Stop containers
+	if [ "$SERV" == true ] ; then
+		lxc-stop -n server
+	fi
+
+	lxc-stop -n slow-client-x
+	lxc-stop -n client-x
+
+	# Stop ns-3 which has locked the taps
+	pkill -f "newtopology"
+	pkill -f "NewTopology"
+
+}
+
+stop_sc_test
+

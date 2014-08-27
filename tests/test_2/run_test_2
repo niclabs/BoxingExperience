@@ -1,0 +1,173 @@
+#!/bin/bash
+# USAGE: run_test_2 [n_clients:<number>] [client_runtime(seconds):<number>] [start_traffic(seconds):<number>] [stop_traffic(seconds):<number>] [traffic_bitrate:<number>Mbps]
+# EXAMPLE: ./run_test_2 4 25 50 60 60Mbps
+# Note: All parameters are optional
+
+##### PARAMETERS #####
+
+# i. USER PARAMETERS
+N_TESTS=${1:-18}
+CLIENT_RUNTIME=${2:-295}
+START=${3:-1500}
+STOP=${4:-2700}
+DR_APP=${5:-60Mbps}
+
+# ii. CONF PARAMETERS (fixed): 
+# 1. Video name
+# 2. Encoding parameters
+# 3. Algorithm parameters: number of buffers, replacement and allocation algs.
+# 4. Topology name
+# 5. Topology fixed parameters: bandwidth of each link
+source conf_params.cfg
+
+# iii. PROGRAM PARAMETERS
+TRANSITION_TIME=5
+CLIENT_TIME=$(($CLIENT_RUNTIME + $TRANSITION_TIME))
+SERVER_RUNTIME=$((5 + $N_TESTS * $CLIENT_TIME))
+SIM_RUNTIME=$((10+$SERVER_RUNTIME))
+LXC_PATH=/var/lib/lxc
+TEST_PATH=~/Desktop/BoxingExperience/test_2
+CLIENT_PATH=/var/lib/lxc/client-x/rootfs/
+EXPERIMENT_DATE=$(date +%Y-%m-%d_%H:%M:%S)
+OUTPUT_DIRECTORY="Results_$(date +%Y-%m-%d_%H:%M:%S)"
+INTEGER='^[0-9]+$'
+mkdir $TEST_PATH/$OUTPUT_DIRECTORY
+chmod 777 $TEST_PATH/$OUTPUT_DIRECTORY
+
+##### AUXILIARY FUNCTION 1 #####
+makelog(){
+
+INFO_FILE=test_2_info.txt
+
+echo Experiment information: >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Date: $EXPERIMENT_DATE >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Replacement Algorithm: $RepAlg >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Allocation Algorithm: $AllocAlg >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Number of buffers: $nbuffers >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Client runtime [seconds]: $CLIENT_RUNTIME >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Server runtime [seconds]: $SERVER_RUNTIME >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Number of consecutive clients: $N_TESTS >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+
+echo "" >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo Network parameters: >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Topology: $TOPOLOGY >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - "Bandwith of link02 (server-router0)": $DR02 >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - "Bandwith of link01 (router0-router1)": $DR01 >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - "Bandwith of link13 (router1-client)": $DR13 >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - "Bandwith of link05 (router0-sink)": $DR05 >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - "Bandwith of link14 (router1-source)": $DR14 >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+
+echo "" >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo Traffic parameters: >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Traffic start time: $START >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Traffic stop time: $STOP >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Traffic bitrate: $DR_APP >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+
+echo "" >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo Video and encoding information: >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Video Name: $VIDNAME >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - Encoding parameters: >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - - 1. vcodec: $VCODEC >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - - 2. mux: $MUX >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - - 3. qmin: $QMIN >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+echo - - 4. qmax: $QMAX >> $TEST_PATH/$OUTPUT_DIRECTORY/$INFO_FILE
+
+}
+
+##### AUXILIARY FUNCTION 2 #####
+start_sc_test()
+{
+
+#####################
+# I. Create scripts #
+#####################
+
+# 1. Create script for server
+cat >$LXC_PATH/server/rootfs/server_script <<'EOF'
+#!/bin/bash
+VLC_PATH=/home/jcarrera/Documents/vlc
+export DISPLAY=
+EOF
+
+chmod +x $LXC_PATH/server/rootfs/server_script
+
+# 2. Create script for client
+	cat >$LXC_PATH/client-x/rootfs/client_script <<'EOF'
+#!/bin/bash
+VLC_PATH=/home/jcarrera/Documents/vlc
+export DISPLAY=
+EOF
+	
+chmod +x $LXC_PATH/client-x/rootfs/client_script
+
+########################
+# II. Populate scripts #
+########################
+
+
+# 1. Populate server_script file
+
+# Line 1: Configure default gateway
+echo "route add default gw 10.100.2.1 dev eth0" >> $LXC_PATH/server/rootfs/server_script
+# Line 2: Broadcast video
+echo 'sudo -u ubuntu timeout '${SERVER_RUNTIME}' $VLC_PATH/vlc -vvv $VLC_PATH/'$VIDNAME' --repeat  --sout "#transcode{vcodec='$VCODEC',venc=ffmpeg{qmin='$QMIN',qmax='$QMAX'}}:standard{access=http{use-algorithms,allocation='$AllocAlg',replacement='$RepAlg',frame-buffers='$nbuffers'},mux='$MUX',dst=@:8080}" vlc://quit' >> $LXC_PATH/server/rootfs/server_script
+
+# 2. Populate client_script file
+
+# Line 1: Configure default gateway
+echo "route add default gw 10.100.3.1 dev eth0" >> $LXC_PATH/client-x/rootfs/client_script
+# Line 2: Connect to the server
+echo 'su - ubuntu -c "$VLC_PATH/vlc "--avcodec-error-resilience=3" --run-time='"${CLIENT_RUNTIME}"' http://10.100.2.2:8080 vlc://quit" 2> fpsrate.txt' >> $LXC_PATH/client-x/rootfs/client_script
+# Line 3: Sleep
+echo "sleep 2" >> $LXC_PATH/client-x/rootfs/client_script
+
+#####################################
+# III. Open ns-3 and start topology #
+#####################################
+cd ../ns-3.19
+./waf build
+./waf --run "scratch/$TOPOLOGY --duration=$SIM_RUNTIME --appStartTime=$START --appStopTime=$STOP --verbose=$VERB --datarate02=$DR02 --datarate01=$DR01 --datarate13=$DR13 --datarate05=$DR05 --datarate14=$DR14 --appDataRate=$DR_APP" &
+sleep 5
+cd - > /dev/null 
+
+###########################
+# IV. Start server script #
+###########################
+xterm -e lxc-start -n server ./server_script -c /dev/null &
+sleep 5
+
+
+##################
+# V. Run clients #
+##################
+
+#rm $TEST_PATH/$OUTPUT_DIRECTORY/variable_traffic.txt 2> /dev/null 
+
+for (( i=1; i <= $N_TESTS; i=i+1 ))
+do
+
+	# Run i-th client
+	xterm -e lxc-start -n client-x ./client_script -c /dev/null &
+	sleep $CLIENT_RUNTIME
+	sleep $TRANSITION_TIME
+	# echo "client ${i} is dead"
+
+	AUXSTR=$(grep '^average FPS: ' $CLIENT_PATH/fpsrate.txt)
+	AUXNUM=$(($CLIENT_TIME * $i))
+  h=`expr $AUXNUM / 3600`
+  m=`expr $AUXNUM  % 3600 / 60`
+  s=`expr $AUXNUM % 60`
+  printf "%02d:%02d:%02d\t%s\n" $h $m $s ${AUXSTR/'average FPS:'/} >> $TEST_PATH/$OUTPUT_DIRECTORY/test_2_output.txt
+  
+done
+
+wait
+
+makelog
+
+echo "Script finished"
+
+}
+	
+start_sc_test
+ 

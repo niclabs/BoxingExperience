@@ -1,0 +1,17 @@
+Number of consecutive clients: 18 (param N_TESTS)
+Time each client will be connected: 295 [s] (approx 5 min) with transition time = 5 [s]
+Sink-source app's operation time: from 1500 (25 min) to 2700 (45 min)
+
+
+Exact instruction: 
+
+$ ./waf --run "scratch/$TOPOLOGY --duration=${SIM_RUNTIME} --appStartTime=1500 --appStopTime=2700 --verbose=$VERB --datarate02=100Mbps --datarate01=100Mbps --datarate13=100Mbps --datarate05=100Mbps --datarate14=100Mbps --appDataRate=60Mbps" &
+
+0: ns-3 sim begins
+5: server connects
+10: first client connects
+..
+90m+10s: last (18th) client disconnects
+90m+15s: server disconnects
+90m+20s: simulation ends
+
