@@ -49,12 +49,17 @@ int main(int argc, char *argv[]) {
 	strcat(fname, num);
 	strcat(fname, ".conf");
 	f = fopen(fname,"w");
-	fprintf(f, "lxc.network.type = veth\n"
+	fprintf(f,"lxc.network.type = veth\n"
 			"lxc.network.name = eth0\n"
 			"lxc.network.flags = up\n"
 			"lxc.network.link = br-%s-c\n"
-			"lxc.network.ipv4 = 10.%d.%d.2/24\n"
+			"lxc.network.ipv4 = 10.%d.%d.2/24\n\n"
 //				"lxc.network.ipv4.gateway = 10.%d.%d.1\n"
+			"lxc.network.type = veth\n"
+			"lxc.network.name = eth1\n"
+			"lxc.network.flags = up\n"
+			"lxc.network.link = lxcbr0\n"
+			"lxc.network.ipv4 = 10.0.3.2/24\n"
 			"lxc.mount.entry = %s"
 			" /var/lib/lxc/client-%s/rootfs/home/jcarrera/Documents/vlc"
 			" none bind 0 0\n"
@@ -67,6 +72,7 @@ int main(int argc, char *argv[]) {
 //					30+i/256, i%256,
 				cwd,
 				"x", "x");
+
 	fclose(f);
 
 }
