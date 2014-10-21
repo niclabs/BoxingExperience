@@ -1,0 +1,69 @@
+#!/bin/bash
+
+clientname=extraclient
+bridgename=extrabridge
+tapname=extratap
+
+destroy_containers_2()
+{
+	# Stop containers and ns-3 (taps can't be destroyed while ns-3 is using them)
+	#./stop_sc_test.sh
+
+	# Destroy containers
+	#for (( i=0; i < 10; i++ ))
+	#do
+		# destroy client i
+
+#		lxc-destroy -n $clientname$i
+
+	#done
+
+	# Take bridges down
+
+	for (( i=0; i < 10; i++ ))
+	do
+	
+		ifconfig $bridgename$i down
+
+	done
+
+	# Remove taps from the bridges
+
+	for (( i=0; i < 10; i++ ))
+	do
+	
+		brctl delif $bridgename$i $tapname$i
+
+	done
+
+	# Bring down the taps
+
+	for (( i=0; i < 10; i++ ))
+	do
+	
+		ifconfig $tapname$i down
+
+	done
+
+	# Delete the taps
+
+	for (( i=0; i < 10; i++ ))
+	do
+	
+		tunctl -d $tapname$i
+
+	done
+
+
+	# Destroy the bridges
+
+	for (( i=0; i < 10; i++ ))
+	do
+	
+		brctl delbr $bridgename$i
+
+	done
+
+}
+
+destroy_containers_2

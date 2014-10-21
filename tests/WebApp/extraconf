@@ -1,0 +1,19 @@
+#!/bin/bash
+VLC_PATH=$1
+clientname=$2
+bridgename=$3
+FILENAME=$clientname.conf
+clientIPeth1=10.0.3.1$ID
+
+	for (( i=0; i < 10; i++ ))
+	do
+		FILENAME=$clientname$i.conf
+		echo lxc.network.type = veth > lxc_conf/$FILENAME
+		echo lxc.network.name = eth0 >> lxc_conf/$FILENAME
+		echo lxc.network.flags = up >> lxc_conf/$FILENAME
+		echo lxc.network.link = $bridgename$i >> lxc_conf/$FILENAME
+		echo lxc.network.ipv4 = 10.100.4$i.2/24 >> lxc_conf/$FILENAME
+		echo "lxc.mount.entry = $VLC_PATH /var/lib/lxc/$clientname$i/rootfs/home/jcarrera/Documents/vlc none bind 0 0" >> lxc_conf/$FILENAME
+		echo "lxc.mount.entry = /usr/lib /var/lib/lxc/$clientname$i/rootfs/usr/lib none bind 0 0" >> lxc_conf/$FILENAME	
+	done
+

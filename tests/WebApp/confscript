@@ -1,0 +1,36 @@
+#!/bin/bash
+ID=$1
+VLC_PATH=$2
+clientbridge=clientbridge$ID
+serverbridge=serverbridge$ID
+servername=server$ID
+clientname=client$ID
+FILENAME=$clientname.conf
+#clientIPeth0=
+clientIPeth1=10.0.3.1$ID
+#serverIP=
+
+# 1. client
+echo lxc.network.type = veth > lxc_conf/$FILENAME
+echo lxc.network.name = eth0 >> lxc_conf/$FILENAME
+echo lxc.network.flags = up >> lxc_conf/$FILENAME
+echo lxc.network.link = $clientbridge >> lxc_conf/$FILENAME
+echo lxc.network.ipv4 = 10.100.3.2/24 >> lxc_conf/$FILENAME
+
+echo lxc.network.type = veth >> lxc_conf/FILENAME >> lxc_conf/$FILENAME
+echo lxc.network.name = eth1 >> lxc_conf/FILENAME >> lxc_conf/$FILENAME
+echo lxc.network.flags = up >> lxc_conf/FILENAME >> lxc_conf/$FILENAME
+echo lxc.network.link = lxcbr0 >> lxc_conf/$FILENAME
+echo lxc.network.ipv4 = $clientIPeth1 >> lxc_conf/$FILENAME
+echo "lxc.mount.entry = $VLC_PATH /var/lib/lxc/$clientname/rootfs/home/jcarrera/Documents/vlc none bind 0 0" >> lxc_conf/$FILENAME
+echo "lxc.mount.entry = /usr/lib /var/lib/lxc/$clientname/rootfs/usr/lib none bind 0 0" >> lxc_conf/$FILENAME
+
+FILENAME=$servername.conf
+# 1. server
+echo lxc.network.type = veth > lxc_conf/$FILENAME
+echo lxc.network.name = eth0 >> lxc_conf/$FILENAME
+echo lxc.network.flags = up >> lxc_conf/$FILENAME
+echo lxc.network.link = $serverbridge >> lxc_conf/$FILENAME
+echo lxc.network.ipv4 = 10.100.2.2/24 >> lxc_conf/$FILENAME
+#echo "lxc.mount.entry = $VLC_PATH /var/lib/lxc/$servername/rootfs/home/jcarrera/Documents/vlc none bind 0 0" >> lxc_conf/$FILENAME
+echo "lxc.mount.entry = /usr/lib /var/lib/lxc/$servername/rootfs/usr/lib none bind 0 0" >> lxc_conf/$FILENAME

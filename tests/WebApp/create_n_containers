@@ -1,0 +1,43 @@
+#!/bin/bash
+CONTAINER_VLC_PATH=/home/jcarrera/Documents/vlc
+clientsname=extraclient
+bridgename=extrabridge
+tapname=extratap
+source dirs.cfg
+
+create_containers()
+{
+	# Create configuration files
+	./extraconf "$VLC_PATH" $clientsname $bridgename
+
+	# Create and start bridges/taps
+	for (( i=0; i < 10; i++ ))
+	do
+		brctl addbr $bridgename${i}
+		tunctl -t $tapname${i}
+		ifconfig $tapname${i} 0.0.0.0 promisc up
+		brctl addif $bridgename${i} $tapname${i}
+		ifconfig $bridgename${i} up
+	done
+	
+	# Show existing bridges
+	brctl show &&
+
+	# Create containers
+
+	for (( i=0; i < 10; i++ ))
+	do
+		lxc-create -n $clientsname${i} -f ./lxc_conf/$clientsname${i}.conf -t ubuntu
+	done
+
+	# Create mount point directories
+
+	for (( i=0; i < 10; i++ ))
+	do
+		mkdir -p $LXC_PATH/$clientsname$i/rootfs/$CONTAINER_VLC_PATH
+	done
+
+}
+
+create_containers
+

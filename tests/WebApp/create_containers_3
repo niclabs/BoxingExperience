@@ -1,0 +1,80 @@
+#!/bin/bash
+NARGS=$#
+SERV=true
+ID=1
+CONTAINER_VLC_PATH=/home/jcarrera/Documents/vlc
+INTEGER='^[0-9]+$'
+
+clientbridge=clientbridge$ID
+clienttap=clienttap$ID
+serverbridge=serverbridge$ID
+servertap=servertap$ID
+servername=server$ID
+clientname=client$ID
+source dirs.cfg
+
+create_containers_2()
+{
+	# Create configuration files	
+	./confscript $ID "$VLC_PATH"
+
+	# Create and start bridges/taps
+
+	# SERVER
+	if [ "$SERV" == true ] ; then
+		brctl addbr $serverbridge
+		tunctl -t $servertap
+		ifconfig $servertap 0.0.0.0 promisc up
+		brctl addif $serverbridge $servertap
+		ifconfig $serverbridge up
+	fi
+
+	# SLOW CLIENT
+	brctl addbr $clientbridge
+	tunctl -t $clienttap
+	ifconfig $clienttap 0.0.0.0 promisc up
+	brctl addif $clientbridge $clienttap
+	ifconfig $clientbridge up
+
+	####
+	# OLD SERVER
+	if [ "$SERV" == true ] ; then
+		brctl addbr br-serverZ
+		tunctl -t tap-serverZ
+		ifconfig tap-serverZ 0.0.0.0 promisc up
+		brctl addif br-serverZ tap-serverZ
+		ifconfig br-serverZ up
+	fi
+
+	# SLOW CLIENT
+	brctl addbr br-z-c
+	tunctl -t tap-scz
+	ifconfig tap-scz 0.0.0.0 promisc up
+	brctl addif br-z-c tap-scz
+	ifconfig br-z-c up
+
+
+	####
+
+	
+	# Show existing bridges
+	brctl show &&
+
+	# Create containers
+	if [ "$SERV" == true ] ; then
+		lxc-create -n $servername -f ./lxc_conf/$servername.conf -t ubuntu
+	fi
+
+	lxc-create -n $clientname -f ./lxc_conf/$clientname.conf -t ubuntu
+
+	# Create mount point directories
+	if [ "$SERV" == true ] ; then
+		mkdir -p $LXC_PATH/$servername/rootfs$CONTAINER_VLC_PATH
+	fi
+
+	mkdir -p $LXC_PATH/$clientname/rootfs$CONTAINER_VLC_PATH
+
+}
+
+create_containers_2
+
